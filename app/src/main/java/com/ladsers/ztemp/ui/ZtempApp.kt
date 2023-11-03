@@ -26,11 +26,26 @@ fun ZtempApp() {
     Scaffold(
         modifier = Modifier.fillMaxWidth(),
         timeText = {
-            TimeText(timeTextStyle = TimeTextDefaults.timeTextStyle(
-                fontSize = 10.sp
-            ))
+            TimeText(
+                timeTextStyle = TimeTextDefaults.timeTextStyle(
+                    fontSize = 10.sp
+                )
+            )
         }
     ) {
-        MainScreen(userInfoState = zontViewModel.userInfoState)
+        MainScreen(
+            deviceStatusState = zontViewModel.deviceStatusState,
+            targetTempState = zontViewModel.targetTempState,
+            onIncreaseBtnClicked = zontViewModel::increaseTargetTempState,
+            onDecreaseBtnClicked = zontViewModel::decreaseTargetTempState,
+            onAcceptBtnClicked = {
+                zontViewModel.setTemp(
+                    zontViewModel.token,
+                    zontViewModel.deviceId,
+                    zontViewModel.targetTempState.value
+                )
+            },
+            onUpdateTargetTemp = zontViewModel::updateTargetTempState
+        )
     }
 }

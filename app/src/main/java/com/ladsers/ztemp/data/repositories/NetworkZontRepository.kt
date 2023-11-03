@@ -3,6 +3,9 @@ package com.ladsers.ztemp.data.repositories
 import com.ladsers.ztemp.data.apiservices.ZontService
 import com.ladsers.ztemp.data.models.DeviceStatus
 import com.ladsers.ztemp.data.models.UserInfo
+import com.ladsers.ztemp.data.models.zont.ThermostatTargetRequest
+import com.ladsers.ztemp.data.models.zont.ThermostatTargetTemps
+import com.ladsers.ztemp.data.models.zont.ThermostatTargetTemps1
 import okhttp3.Credentials
 
 class NetworkZontRepository(
@@ -13,10 +16,26 @@ class NetworkZontRepository(
     )
 
     override suspend fun getDevices(token: String): DeviceStatus {
-        TODO("Not yet implemented")
+        val device = zontService.getDevices(token).devices.firstOrNull()
+
+        return DeviceStatus(
+            id = device?.id,
+            name = device?.name,
+            currentTemp = device?.thermometers?.firstOrNull()?.lastValue,
+            targetTemp = device?.io?.lastBoilerState?.targetTemp
+        )
     }
 
-    override suspend fun setTemp(token: String, targetTemp: Double) {
-        TODO("Not yet implemented")
+    override suspend fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
+        val thermostatTargetRequest = ThermostatTargetRequest(
+            id = deviceId,
+            thermostatTargetTemps = ThermostatTargetTemps(
+                thermostatTargetTemps1 = ThermostatTargetTemps1(
+                    temp = targetTemp
+                )
+            )
+        )
+
+        zontService.setTemp(token, thermostatTargetRequest)
     }
 }

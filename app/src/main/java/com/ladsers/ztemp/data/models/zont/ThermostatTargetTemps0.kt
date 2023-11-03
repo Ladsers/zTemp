@@ -6,6 +6,6 @@ import com.google.gson.annotations.SerializedName
 data class ThermostatTargetTemps0(
 
     @SerializedName("manual") var manual: Boolean? = null,
-    @SerializedName("temp") var temp: Int? = null
+    @SerializedName("temp") var temp: Double? = null
 
 )

@@ -8,26 +8,32 @@ import retrofit2.http.*
 
 interface ZontService {
 
-    //TODO
     @Headers(
         "X-ZONT-Client:report@ladsers.com",
-        "Content-Type:application/json")
+        "Content-Type:application/json"
+    )
     @POST("get_authtoken")
     suspend fun getAuth(
         @Header("Authorization") credentials: String
     ): AuthResponse
 
-    //TODO
-    @POST("todo")
+    @Headers(
+        "X-ZONT-Client:report@ladsers.com",
+        "Content-Type:application/json"
+    )
+    @POST("devices")
     suspend fun getDevices(
-        token: String,
+        @Header("X-ZONT-Token") token: String,
         @Body devicesRequest: DevicesRequest = DevicesRequest()
     ): DevicesResponse
 
-    //TODO
-    @POST("todo")
+    @Headers(
+        "X-ZONT-Client:report@ladsers.com",
+        "Content-Type:application/json"
+    )
+    @POST("update_device")
     suspend fun setTemp(
-        token: String,
+        @Header("X-ZONT-Token") token: String,
         @Body thermostatTargetRequest: ThermostatTargetRequest
     )
 
