@@ -1,4 +1,4 @@
-package com.ladsers.ztemp.presentation.theme
+package com.ladsers.ztemp.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

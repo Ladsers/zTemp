@@ -4,7 +4,7 @@
  * changes to the libraries and their usages.
  */
 
-package com.ladsers.ztemp.presentation
+package com.ladsers.ztemp.ui.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.ladsers.ztemp.R
-import com.ladsers.ztemp.presentation.theme.ZTempTheme
+import com.ladsers.ztemp.ui.theme.ZTempTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
