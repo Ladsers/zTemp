@@ -19,6 +19,7 @@ fun ZtempApp() {
     val zontViewModel: ZontViewModel = viewModel(
         factory = ZontViewModel.provideFactory(
             (LocalContext.current.applicationContext as ZtempApplication).container.zontRepository,
+            (LocalContext.current.applicationContext as ZtempApplication).container.dataStoreRepository,
             owner = LocalSavedStateRegistryOwner.current
         )
     )
@@ -34,6 +35,7 @@ fun ZtempApp() {
         }
     ) {
         MainScreen(
+            zontViewModel,
             deviceStatusState = zontViewModel.deviceStatusState,
             targetTempState = zontViewModel.targetTempState,
             onIncreaseBtnClicked = zontViewModel::increaseTargetTempState,

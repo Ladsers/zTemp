@@ -3,7 +3,7 @@ package com.ladsers.ztemp.ui.screens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import com.ladsers.ztemp.domain.states.DeviceStatusState
-import com.ladsers.ztemp.domain.states.UserInfoState
+import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 
 //@Composable
 //fun MainScreen(userInfoState: UserInfoState) {
@@ -17,14 +17,19 @@ import com.ladsers.ztemp.domain.states.UserInfoState
 //}
 
 @Composable
-fun MainScreen(deviceStatusState: DeviceStatusState,
-               targetTempState: State<Double>,
-               onUpdateTargetTemp: (Double) -> Unit,
-               onDecreaseBtnClicked: () -> Unit,
-               onIncreaseBtnClicked: () -> Unit,
-               onAcceptBtnClicked: () -> Unit) {
+fun MainScreen(
+    viewModel: ZontViewModel,
+    deviceStatusState: DeviceStatusState,
+    targetTempState: State<Double>,
+    onUpdateTargetTemp: (Double) -> Unit,
+    onDecreaseBtnClicked: () -> Unit,
+    onIncreaseBtnClicked: () -> Unit,
+    onAcceptBtnClicked: () -> Unit
+) {
     when(deviceStatusState) {
         is DeviceStatusState.InProcessing -> InProcessScreen()
+        is DeviceStatusState.NotSignedIn -> SignInScreen(viewModel = viewModel)
+        is DeviceStatusState.NoDeviceSelected -> DevicesScreen()
         is DeviceStatusState.Success -> {
             val deviceStatus = deviceStatusState.deviceStatus
             deviceStatus.targetTemp?.let {
@@ -38,6 +43,10 @@ fun MainScreen(deviceStatusState: DeviceStatusState,
                 onAcceptBtnClicked = onAcceptBtnClicked
             )
         }
-        is DeviceStatusState.Error -> ErrorScreen(deviceStatusState.errorCode.toString())
+        is DeviceStatusState.Error -> ErrorScreen(
+            deviceStatusState.icon,
+            deviceStatusState.message,
+            deviceStatusState.retryAction
+        )
     }
 }

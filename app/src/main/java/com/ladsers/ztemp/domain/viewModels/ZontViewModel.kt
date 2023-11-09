@@ -1,19 +1,29 @@
 package com.ladsers.ztemp.domain.viewModels
 
 import android.os.Bundle
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.VpnKeyOff
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
+import com.ladsers.ztemp.data.models.AuthData
+import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.states.UserInfoState
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
 
 class ZontViewModel(
-    private val zontRepository: ZontRepository
+    private val zontRepository: ZontRepository,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
+
+    private var authData: AuthData? = null
 
     var userInfoState: UserInfoState by mutableStateOf(UserInfoState.InProcessing)
         private set
@@ -37,33 +47,90 @@ class ZontViewModel(
         _targetTempState.value += 0.5 // todo
     }
 
+    private val _username: MutableState<String> = mutableStateOf(value = "")
+    val username: State<String> = _username
+    fun updateUsername(newValue: String) {
+        _username.value = newValue
+    }
+
+    private val _password: MutableState<String> = mutableStateOf(value = "")
+    val password: State<String> = _password
+    fun updatePassword(newValue: String) {
+        _password.value = newValue
+    }
+
 
     //TODO
     var login: String = ""
-    var password: String = ""
+    var password1: String = ""
     var token: String = ""
     var deviceId: Int = 0
 
     //TODO
     init {
-        getDeviceStatus(token)
+        //getDeviceStatus(token)
+        getStatus()
     }
 
-    fun getUserInfo(login: String, password: String) {
+    fun getStatus() {
         viewModelScope.launch {
-            userInfoState = UserInfoState.InProcessing
-            userInfoState = try {
-                //todo
-                UserInfoState.Success(zontRepository.getUserInfo(login, password))
-            } catch (e: IOException) {
-                UserInfoState.Error(-1) //todo
-            } catch (e: HttpException) {
-                UserInfoState.Error(e.code())
+            deviceStatusState = DeviceStatusState.InProcessing
+            authData = authData ?: dataStoreRepository.getAuthData().first()
+
+            if (authData?.token.isNullOrEmpty()) {
+                deviceStatusState = DeviceStatusState.NotSignedIn
+                return@launch
+            }
+
+            if (authData!!.deviceId == 0) {
+                deviceStatusState = DeviceStatusState.NoDeviceSelected
+                return@launch
             }
         }
     }
 
-    fun getDeviceStatus(token: String) {
+    fun signIn() {
+        if (username.value.isEmpty() || password.value.isEmpty()) return
+
+        viewModelScope.launch {
+            deviceStatusState = DeviceStatusState.InProcessing
+            try {
+                val userInfo = zontRepository.getUserInfo(username.value, password.value)
+
+                userInfo.token?.let { t ->
+                    authData?.let { d ->
+                        d.token = t
+                        dataStoreRepository.saveAuthData(d)
+                    }
+                }
+
+                getStatus()
+
+            } catch (e: IOException) {
+                deviceStatusState = DeviceStatusState.Error(
+                    icon = Icons.Rounded.WifiOff,
+                    message = "Нет подключения к Интернету",
+                    retryAction = { signIn() }
+                )
+            } catch (e: HttpException) {
+                if (e.code() == 403) {
+                    deviceStatusState = DeviceStatusState.Error(
+                        icon = Icons.Rounded.VpnKeyOff,
+                        message = "Неверный логин и/или пароль",
+                        retryAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
+                    )
+                } else {
+                    deviceStatusState = DeviceStatusState.Error(
+                        icon = Icons.Rounded.Error,
+                        message = "Ошибка сервера",
+                        retryAction = { signIn() }
+                    )
+                }
+            }
+        }
+    }
+
+    /*fun getDeviceStatus(token: String) {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProcessing
             deviceStatusState = try {
@@ -74,7 +141,7 @@ class ZontViewModel(
                 DeviceStatusState.Error(e.code())
             }
         }
-    }
+    }*/
 
     fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
         viewModelScope.launch {
@@ -84,7 +151,8 @@ class ZontViewModel(
 
     companion object {
         fun provideFactory(
-            myRepository: ZontRepository,
+            zontRepository: ZontRepository,
+            dataStoreRepository: DataStoreRepository,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null
         ): AbstractSavedStateViewModelFactory =
@@ -95,7 +163,7 @@ class ZontViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return ZontViewModel(myRepository) as T
+                    return ZontViewModel(zontRepository, dataStoreRepository) as T
                 }
             }
     }
