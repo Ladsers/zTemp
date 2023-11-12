@@ -26,10 +26,14 @@ fun MainScreen(
     onIncreaseBtnClicked: () -> Unit,
     onAcceptBtnClicked: () -> Unit
 ) {
-    when(deviceStatusState) {
+    when (deviceStatusState) {
         is DeviceStatusState.InProcessing -> InProcessScreen()
         is DeviceStatusState.NotSignedIn -> SignInScreen(viewModel = viewModel)
-        is DeviceStatusState.NoDeviceSelected -> DevicesScreen()
+        is DeviceStatusState.NoDeviceSelected -> DevicesScreen(
+            deviceStatusState.devices,
+            deviceStatusState.onDeviceSelected,
+            deviceStatusState.onLogOutClicked
+        )
         is DeviceStatusState.Success -> {
             val deviceStatus = deviceStatusState.deviceStatus
             deviceStatus.targetTemp?.let {

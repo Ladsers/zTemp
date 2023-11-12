@@ -32,7 +32,7 @@ class ZontViewModel(
         private set
 
     private val _targetTempState: MutableState<Double> = mutableStateOf(value = 0.0)
-    val targetTempState : State<Double> = _targetTempState
+    val targetTempState: State<Double> = _targetTempState
 
     //todo
     fun updateTargetTempState(newValue: Double) {
@@ -83,9 +83,16 @@ class ZontViewModel(
             }
 
             if (authData!!.deviceId == 0) {
-                deviceStatusState = DeviceStatusState.NoDeviceSelected
+                getDevices()
                 return@launch
             }
+
+            //todo for test
+            deviceStatusState = DeviceStatusState.Error(
+                icon = Icons.Rounded.Error,
+                message = authData!!.deviceId.toString(),
+                retryAction = { getDevices() }
+            )
         }
     }
 
@@ -127,6 +134,61 @@ class ZontViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun getDevices() {
+        viewModelScope.launch {
+            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = try {
+                DeviceStatusState.NoDeviceSelected(
+                    devices = zontRepository.getDevices(authData!!.token),
+                    onDeviceSelected = ::selectDevice,
+                    onLogOutClicked = { logOut() }
+                )
+            } catch (e: IOException) {
+                DeviceStatusState.Error(
+                    icon = Icons.Rounded.WifiOff,
+                    message = "Нет подключения к Интернету",
+                    retryAction = { getDevices() }
+                )
+            } catch (e: HttpException) {
+                if (e.code() == 403) {
+                    // todo -> SignInError
+                    DeviceStatusState.Error(
+                        icon = Icons.Rounded.VpnKeyOff,
+                        message = "Неверный логин и/или пароль",
+                        retryAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
+                    )
+                } else {
+                    DeviceStatusState.Error(
+                        icon = Icons.Rounded.Error,
+                        message = "Ошибка сервера",
+                        retryAction = { getDevices() }
+                    )
+                }
+            }
+        }
+    }
+
+    fun selectDevice(deviceId: Int) {
+        viewModelScope.launch {
+            authData?.let { d ->
+                d.deviceId = deviceId
+                dataStoreRepository.saveAuthData(d)
+            }
+            getStatus()
+        }
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            authData?.let { d ->
+                d.token = ""
+                d.deviceId = 0
+                dataStoreRepository.saveAuthData(d)
+            }
+            getStatus()
         }
     }
 
