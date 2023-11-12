@@ -34,6 +34,9 @@ fun MainScreen(
             deviceStatusState.onDeviceSelected,
             deviceStatusState.onLogOutClicked
         )
+        is DeviceStatusState.SignInError -> SignInErrorScreen {
+            viewModel.logOut()
+        }
         is DeviceStatusState.Success -> {
             val deviceStatus = deviceStatusState.deviceStatus
             deviceStatus.targetTemp?.let {

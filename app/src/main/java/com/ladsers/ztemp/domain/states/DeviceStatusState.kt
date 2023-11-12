@@ -13,6 +13,7 @@ interface DeviceStatusState {
     ) : DeviceStatusState
 
     object SignInError : DeviceStatusState
+    object GettingStatus : DeviceStatusState
     data class Success(val deviceStatus: DeviceStatus) : DeviceStatusState
     data class Error(val icon: ImageVector, val message: String, val retryAction: () -> Unit) :
         DeviceStatusState

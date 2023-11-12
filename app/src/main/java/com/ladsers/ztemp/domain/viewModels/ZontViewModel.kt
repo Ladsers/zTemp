@@ -87,12 +87,7 @@ class ZontViewModel(
                 return@launch
             }
 
-            //todo for test
-            deviceStatusState = DeviceStatusState.Error(
-                icon = Icons.Rounded.Error,
-                message = authData!!.deviceId.toString(),
-                retryAction = { getDevices() }
-            )
+            deviceStatusState = DeviceStatusState.GettingStatus
         }
     }
 
@@ -154,12 +149,7 @@ class ZontViewModel(
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
-                    // todo -> SignInError
-                    DeviceStatusState.Error(
-                        icon = Icons.Rounded.VpnKeyOff,
-                        message = "Неверный логин и/или пароль",
-                        retryAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
-                    )
+                    DeviceStatusState.SignInError
                 } else {
                     DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
