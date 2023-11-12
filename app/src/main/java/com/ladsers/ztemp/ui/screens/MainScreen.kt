@@ -37,19 +37,8 @@ fun MainScreen(
         is DeviceStatusState.SignInError -> SignInErrorScreen {
             viewModel.logOut()
         }
-        is DeviceStatusState.Success -> {
-            val deviceStatus = deviceStatusState.deviceStatus
-            deviceStatus.targetTemp?.let {
-                onUpdateTargetTemp(it)
-            }
-            StatusScreen(
-                deviceStatus = deviceStatusState.deviceStatus,
-                targetTempState = targetTempState,
-                onDecreaseBtnClicked = onDecreaseBtnClicked,
-                onIncreaseBtnClicked = onIncreaseBtnClicked,
-                onAcceptBtnClicked = onAcceptBtnClicked
-            )
-        }
+        is DeviceStatusState.GettingStatus -> StatusScreen2(deviceStatus = null)
+        is DeviceStatusState.Success -> StatusScreen2(deviceStatus = deviceStatusState.deviceStatus)
         is DeviceStatusState.Error -> ErrorScreen(
             deviceStatusState.icon,
             deviceStatusState.message,
