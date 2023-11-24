@@ -29,7 +29,7 @@ fun ZtempApp() {
         timeText = {
             TimeText(
                 timeTextStyle = TimeTextDefaults.timeTextStyle(
-                    fontSize = 10.sp
+                    fontSize = 12.sp
                 )
             )
         }
