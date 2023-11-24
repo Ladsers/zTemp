@@ -72,22 +72,50 @@ class ZontViewModel(
         getStatus()
     }
 
-    fun getStatus() {
+    fun getStatus(refreshing: Boolean = false) {
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
-            authData = authData ?: dataStoreRepository.getAuthData().first()
 
-            if (authData?.token.isNullOrEmpty()) {
-                deviceStatusState = DeviceStatusState.NotSignedIn
-                return@launch
-            }
+            if (!refreshing) {
+                deviceStatusState = DeviceStatusState.InProcessing
+                authData = authData ?: dataStoreRepository.getAuthData().first()
 
-            if (authData!!.deviceId == 0) {
-                getDevices()
-                return@launch
+                if (authData?.token.isNullOrEmpty()) {
+                    deviceStatusState = DeviceStatusState.NotSignedIn
+                    return@launch
+                }
+
+                if (authData!!.deviceId == 0) {
+                    getDevices()
+                    return@launch
+                }
             }
 
             deviceStatusState = DeviceStatusState.GettingStatus
+
+            deviceStatusState = try {
+                DeviceStatusState.Success(
+                    deviceStatus = zontRepository.getDeviceStatus(
+                        authData!!.token,
+                        authData!!.deviceId
+                    )
+                )
+            } catch (e: IOException) {
+                DeviceStatusState.Error(
+                    icon = Icons.Rounded.WifiOff,
+                    message = "Нет подключения к Интернету",
+                    retryAction = { getDevices() }
+                )
+            } catch (e: HttpException) {
+                if (e.code() == 403) {
+                    DeviceStatusState.SignInError
+                } else {
+                    DeviceStatusState.Error(
+                        icon = Icons.Rounded.Error,
+                        message = "Ошибка сервера",
+                        retryAction = { getDevices() }
+                    )
+                }
+            }
         }
     }
 

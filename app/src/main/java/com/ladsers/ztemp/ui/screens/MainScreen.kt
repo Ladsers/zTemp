@@ -38,7 +38,9 @@ fun MainScreen(
             viewModel.logOut()
         }
         is DeviceStatusState.GettingStatus -> StatusScreen2(deviceStatus = null)
-        is DeviceStatusState.Success -> StatusScreen2(deviceStatus = deviceStatusState.deviceStatus)
+        is DeviceStatusState.Success -> StatusScreen2(
+            deviceStatus = deviceStatusState.deviceStatus,
+            onRefreshAction = { viewModel.getStatus(refreshing = true) })
         is DeviceStatusState.Error -> ErrorScreen(
             deviceStatusState.icon,
             deviceStatusState.message,

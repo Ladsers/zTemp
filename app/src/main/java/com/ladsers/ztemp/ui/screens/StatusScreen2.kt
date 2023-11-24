@@ -1,9 +1,12 @@
 package com.ladsers.ztemp.ui.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +22,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun StatusScreen2(
-    deviceStatus: DeviceStatus?
+    deviceStatus: DeviceStatus?,
+    onRefreshAction: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -31,7 +35,10 @@ fun StatusScreen2(
         Spacer(modifier = Modifier.padding(top = 22.dp))
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }) { onRefreshAction() },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
