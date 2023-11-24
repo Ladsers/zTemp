@@ -32,7 +32,9 @@ class NetworkZontRepository(
                 id = device.id!!,
                 name = device.name!!,
                 currentTemp = device.thermometers.firstOrNull()?.lastValue,
-                targetTemp = device.io?.lastBoilerState?.targetTemp
+                targetTemp = device.io?.lastBoilerState?.targetTemp,
+                mainPower = null,
+                online = null
             )
         }
     }
@@ -44,7 +46,9 @@ class NetworkZontRepository(
             id = device?.id ?: 0, //todo remove
             name = device?.name ?: "", //todo remove
             currentTemp = device?.thermometers?.firstOrNull()?.lastValue,
-            targetTemp = device?.io?.lastBoilerState?.targetTemp
+            targetTemp = device?.io?.lastBoilerState?.targetTemp,
+            mainPower = device?.io?.powerSource == "main",
+            online = device?.online
         )
     }
 

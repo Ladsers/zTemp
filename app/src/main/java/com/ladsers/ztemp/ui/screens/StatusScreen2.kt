@@ -10,10 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.ButtonDefaults
-import androidx.wear.compose.material.Icon
-import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.*
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.DeviceStatus
 import com.ladsers.ztemp.ui.theme.wearColorPalette
@@ -38,32 +35,52 @@ fun StatusScreen2(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Thermostat,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .width(20.dp)
-                        .padding(top = 2.dp)
-                )
-                Text(
-                    text = deviceStatus?.currentTemp?.let { "$it°C" } ?: "--",
-                    color = Color.White,
-                    fontSize = 25.sp,
-                    modifier = Modifier.padding(start = 2.dp)
-                )
-                Icon(
-                    imageVector = Icons.Rounded.BatteryChargingFull,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(22.dp)
-                        .padding(top = 2.dp),
-                    tint = Color.Red
-                )
+
+            if (deviceStatus?.online == false) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.CloudOff,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(24.dp)
+                            .padding(top = 4.dp, bottom = 5.dp),
+                        tint = Color.Red
+                    )
+                }
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Thermostat,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .width(20.dp)
+                            .padding(top = 2.dp)
+                    )
+                    Text(
+                        text = deviceStatus?.currentTemp?.let { "$it°C" } ?: "—",
+                        color = Color.White,
+                        fontSize = 25.sp,
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+
+                    if (deviceStatus?.mainPower == false) {
+                        Icon(
+                            imageVector = Icons.Rounded.BatteryChargingFull,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(22.dp)
+                                .padding(top = 2.dp),
+                            tint = Color.Red
+                        )
+                    }
+                }
             }
 
             Row(
@@ -79,30 +96,38 @@ fun StatusScreen2(
                     tint = wearColorPalette.secondary
                 )
                 Text(
-                    text = deviceStatus?.targetTemp?.let { "$it°C" } ?: "--",
+                    text = deviceStatus?.targetTemp?.let { "$it°C" } ?: "—",
                     color = wearColorPalette.secondary,
                     fontSize = 23.sp,
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(16.dp)
-                        .padding(top = 2.dp),
-                    tint = Color.Gray
-                )
-                Text(
-                    text = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 2.dp)
+            if (deviceStatus != null) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(16.dp)
+                            .padding(top = 2.dp),
+                        tint = Color.Gray
+                    )
+                    Text(
+                        text = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+                }
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(16.dp),
+                    indicatorColor = wearColorPalette.primary,
+                    trackColor = Color.Black,
                 )
             }
         }
@@ -123,7 +148,8 @@ fun StatusScreen2(
                 Button(
                     onClick = { /* todo */ },
                     colors = ButtonDefaults.primaryButtonColors(),
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier.padding(end = 8.dp),
+                    enabled = deviceStatus?.online == true
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.LocalFireDepartment,
