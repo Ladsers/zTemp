@@ -31,8 +31,9 @@ class NetworkZontRepository(
             DeviceStatus(
                 id = device.id!!,
                 name = device.name!!,
-                currentTemp = device.thermometers.firstOrNull()?.lastValue,
+                currentTemp = device.thermometers.firstOrNull()?.lastValue, //todo remove?
                 targetTemp = device.io?.lastBoilerState?.targetTemp,
+                tempStep = 1.0,
                 mainPower = null,
                 online = null
             )
@@ -44,9 +45,10 @@ class NetworkZontRepository(
 
         return DeviceStatus(
             id = device?.id ?: 0, //todo remove
-            name = device?.name ?: "", //todo remove
+            name = device?.name ?: "", //todo "unknown"
             currentTemp = device?.thermometers?.firstOrNull()?.lastValue,
             targetTemp = device?.io?.lastBoilerState?.targetTemp,
+            tempStep = device?.tempstep ?: 1.0,
             mainPower = device?.io?.powerSource == "main",
             online = device?.online
         )

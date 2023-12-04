@@ -24,7 +24,8 @@ fun MainScreen(
     onUpdateTargetTemp: (Double) -> Unit,
     onDecreaseBtnClicked: () -> Unit,
     onIncreaseBtnClicked: () -> Unit,
-    onAcceptBtnClicked: () -> Unit
+    onAcceptBtnClicked: () -> Unit,
+    onSettingsBtnClicked: (Boolean, String, Double) -> Unit
 ) {
     when (deviceStatusState) {
         is DeviceStatusState.InProcessing -> InProcessScreen()
@@ -37,10 +38,14 @@ fun MainScreen(
         is DeviceStatusState.SignInError -> SignInErrorScreen {
             viewModel.logOut()
         }
-        is DeviceStatusState.GettingStatus -> StatusScreen2(deviceStatus = null)
+        is DeviceStatusState.GettingStatus -> StatusScreen2(
+            deviceStatus = null,
+            onSettingsBtnClicked = onSettingsBtnClicked
+        )
         is DeviceStatusState.Success -> StatusScreen2(
             deviceStatus = deviceStatusState.deviceStatus,
-            onRefreshAction = { viewModel.getStatus(refreshing = true) })
+            onRefreshAction = { viewModel.getStatus(refreshing = true) },
+            onSettingsBtnClicked = onSettingsBtnClicked)
         is DeviceStatusState.Error -> ErrorScreen(
             deviceStatusState.icon,
             deviceStatusState.message,

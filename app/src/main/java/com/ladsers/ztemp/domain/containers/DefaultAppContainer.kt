@@ -3,7 +3,7 @@ package com.ladsers.ztemp.domain.containers
 import android.content.Context
 import com.ladsers.ztemp.data.apiservices.ZontService
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
-import com.ladsers.ztemp.data.repositories.DeviceDataStoreRepository
+import com.ladsers.ztemp.data.repositories.AppDataStoreRepository
 import com.ladsers.ztemp.data.repositories.NetworkZontRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import retrofit2.Retrofit
@@ -26,6 +26,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val dataStoreRepository: DataStoreRepository by lazy {
-        DeviceDataStoreRepository(context)
+        AppDataStoreRepository(context)
     }
 }

@@ -11,15 +11,15 @@ import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.TimeTextDefaults
 import com.ladsers.ztemp.domain.ZtempApplication
-import com.ladsers.ztemp.domain.viewModels.ZontViewModel
-import com.ladsers.ztemp.ui.screens.MainScreen
+import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
+import com.ladsers.ztemp.ui.screens.SettingsScreen
 
 @Composable
-fun ZtempApp() {
-    val zontViewModel: ZontViewModel = viewModel(
-        factory = ZontViewModel.provideFactory(
-            (LocalContext.current.applicationContext as ZtempApplication).container.zontRepository,
+fun SettingsActivityContent(updateAvailable: Boolean, deviceName: String, tempStep: Double) {
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModel.provideFactory(
             (LocalContext.current.applicationContext as ZtempApplication).container.dataStoreRepository,
+            tempStep = tempStep,
             owner = LocalSavedStateRegistryOwner.current
         )
     )
@@ -34,20 +34,6 @@ fun ZtempApp() {
             )
         }
     ) {
-        MainScreen(
-            zontViewModel,
-            deviceStatusState = zontViewModel.deviceStatusState,
-            targetTempState = zontViewModel.targetTempState,
-            onIncreaseBtnClicked = zontViewModel::increaseTargetTempState,
-            onDecreaseBtnClicked = zontViewModel::decreaseTargetTempState,
-            onAcceptBtnClicked = {
-                zontViewModel.setTemp(
-                    zontViewModel.token,
-                    zontViewModel.deviceId,
-                    zontViewModel.targetTempState.value
-                )
-            },
-            onUpdateTargetTemp = zontViewModel::updateTargetTempState
-        )
+        SettingsScreen(settingsViewModel, updateAvailable, deviceName)
     }
 }

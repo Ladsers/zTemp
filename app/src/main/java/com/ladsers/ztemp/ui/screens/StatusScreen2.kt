@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun StatusScreen2(
     deviceStatus: DeviceStatus?,
+    onSettingsBtnClicked: (Boolean, String, Double) -> Unit,
     onRefreshAction: () -> Unit = {}
 ) {
     Column(
@@ -164,9 +165,18 @@ fun StatusScreen2(
                     )
                 }
                 Button(
-                    onClick = { /* todo */ },
+                    onClick = {
+                        deviceStatus?.let {
+                            onSettingsBtnClicked(
+                                true, // todo update system
+                                it.name,
+                                it.tempStep
+                            )
+                        }
+                    },
                     colors = ButtonDefaults.secondaryButtonColors(),
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp),
+                    enabled = deviceStatus?.online == true
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
