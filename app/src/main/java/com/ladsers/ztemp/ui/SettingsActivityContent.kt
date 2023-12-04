@@ -15,7 +15,12 @@ import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
 import com.ladsers.ztemp.ui.screens.SettingsScreen
 
 @Composable
-fun SettingsActivityContent(updateAvailable: Boolean, deviceName: String, tempStep: Double) {
+fun SettingsActivityContent(
+    updateAvailable: Boolean,
+    deviceName: String,
+    tempStep: Double,
+    goToWebsite: (String) -> Unit
+) {
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModel.provideFactory(
             (LocalContext.current.applicationContext as ZtempApplication).container.dataStoreRepository,
@@ -34,6 +39,6 @@ fun SettingsActivityContent(updateAvailable: Boolean, deviceName: String, tempSt
             )
         }
     ) {
-        SettingsScreen(settingsViewModel, updateAvailable, deviceName)
+        SettingsScreen(settingsViewModel, updateAvailable, deviceName, goToWebsite)
     }
 }

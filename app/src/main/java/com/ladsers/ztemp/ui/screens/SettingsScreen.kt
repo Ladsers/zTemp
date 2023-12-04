@@ -23,7 +23,8 @@ import com.ladsers.ztemp.ui.theme.Teal
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     updateAvailable: Boolean,
-    deviceName: String
+    deviceName: String,
+    goToWebsite: (String) -> Unit
 ) {
     ScalingLazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -47,7 +48,7 @@ fun SettingsScreen(
                         startBackgroundColor = DarkOrange,
                         endBackgroundColor = MaterialTheme.colors.surface
                     ),
-                    onClick = { /* todo */ }
+                    onClick = { goToWebsite("https://www.ladsers.com/ztemp/download") }
                 ) {}
             }
         }
@@ -77,13 +78,18 @@ fun SettingsScreen(
             )
         }
         item {
-            SettingsCard(title = stringResource(id = R.string.appWebsite))
+            SettingsCard(
+                title = stringResource(id = R.string.appWebsite),
+                enabled = true,
+                action = { goToWebsite("https://www.ladsers.com/ztemp") })
         }
         item {
             SettingsCard(title = stringResource(id = R.string.createdBy))
         }
         item {
-            SettingsCard(title = stringResource(id = R.string.licenseThirdParty))
+            SettingsCard(title = stringResource(id = R.string.licenseThirdParty),
+                enabled = true,
+                action = { goToWebsite("https://www.ladsers.com/ztemp/license") })
         }
         item {
             SettingsCard(
