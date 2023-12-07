@@ -31,6 +31,7 @@ import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
+import com.ladsers.ztemp.ui.components.TextInputCard
 import com.ladsers.ztemp.ui.theme.DarkOrange
 import com.ladsers.ztemp.ui.theme.Teal
 import kotlinx.coroutines.launch
@@ -111,19 +112,35 @@ fun SettingsScreen(
                 )
             }
             item {
-                TextInputChip(
+                TextInputCard(
                     label = stringResource(id = R.string.presetTemp1),
                     valueState = viewModel.presetTemp1,
                     onUpdateValue = viewModel::updatePresetTemp1,
-                    enabled = viewModel.addFeatures.value
+                    enabled = viewModel.addFeatures.value,
+                    disabledAction = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(
+                                if (updateAvailable) 5 else 4,
+                                0
+                            )
+                        }
+                    }
                 )
             }
             item {
-                TextInputChip(
+                TextInputCard(
                     label = stringResource(id = R.string.presetTemp2),
                     valueState = viewModel.presetTemp2,
                     onUpdateValue = viewModel::updatePresetTemp2,
-                    enabled = viewModel.addFeatures.value
+                    enabled = viewModel.addFeatures.value,
+                    disabledAction = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(
+                                if (updateAvailable) 5 else 4,
+                                0
+                            )
+                        }
+                    }
                 )
             }
             item {

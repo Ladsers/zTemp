@@ -19,6 +19,7 @@ import androidx.wear.compose.material.*
 import androidx.wear.input.RemoteInputIntentHelper
 import androidx.wear.input.wearableExtender
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
+import com.ladsers.ztemp.ui.components.TextInputCard
 import com.ladsers.ztemp.ui.theme.Teal
 
 @Composable
@@ -32,14 +33,14 @@ fun SignInScreen(viewModel: ZontViewModel) {
             }
         }
         item {
-            TextInputChip(
+            TextInputCard(
                 label = "Логин",
                 valueState = viewModel.username,
                 onUpdateValue = viewModel::updateUsername
             )
         }
         item {
-            TextInputChip(
+            TextInputCard(
                 label = "Пароль",
                 valueState = viewModel.password,
                 onUpdateValue = viewModel::updatePassword
@@ -51,49 +52,5 @@ fun SignInScreen(viewModel: ZontViewModel) {
             }
         }
     }
-}
-
-@Composable
-fun TextInputChip(label: String, valueState: State<String>, onUpdateValue: (String) -> Unit, enabled: Boolean = true) {
-
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            it.data?.let { data ->
-                val results: Bundle = RemoteInput.getResultsFromIntent(data)
-                val result = SpannableString(results.getCharSequence("value")).toString()
-                onUpdateValue(result)
-            }
-        }
-
-    TitleCard(
-        title = { Text(label, fontSize = 18.sp, color = if (enabled) Color.White else Color.Gray) },
-        content = {
-            Text(
-                valueState.value.ifEmpty { "Ввод" },
-                color = if (enabled) Teal else Color.Gray
-            )
-        },
-        modifier = Modifier.fillMaxWidth(),
-        backgroundPainter = CardDefaults.cardBackgroundPainter(
-            startBackgroundColor = MaterialTheme.colors.surface,
-            endBackgroundColor = MaterialTheme.colors.surface
-        ),
-        enabled = enabled,
-        onClick = {
-            val intent: Intent = RemoteInputIntentHelper.createActionRemoteInputIntent();
-            val remoteInputs: List<RemoteInput> = listOf(
-                RemoteInput.Builder("value")
-                    .setLabel(label)
-                    .wearableExtender {
-                        setEmojisAllowed(false)
-                        setInputActionType(EditorInfo.IME_ACTION_DONE)
-                    }.build()
-            )
-
-            RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
-
-            launcher.launch(intent)
-        }
-    )
 }
 

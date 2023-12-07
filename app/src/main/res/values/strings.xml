@@ -23,6 +23,7 @@
     <string name="version">Версия</string>
     <string name="logOut">Выйти из аккаунта</string>
 
+    <string name="enter">Ввод</string>
     <string name="unknown">Неизвестно</string>
 
 </resources>
