@@ -15,8 +15,8 @@
     <string name="presetTemp1">Избранное 1</string>
     <string name="presetTemp2">Избранное 2</string>
     <string name="changeDevice">Сменить устройство</string>
-    <string name="supportProject">Поддержать проект</string>
-    <string name="supportProjectDescription">Получить дополнительные функции</string>
+    <string name="supportDeveloper">Поддержать разработчика</string>
+    <string name="supportDeveloperDescription">Получить дополнительные функции</string>
     <string name="appWebsite">Сайт приложения</string>
     <string name="createdBy">Разработал Максим Королев</string>
     <string name="licenseThirdParty">Лицензия, сторонние ресурсы</string>
