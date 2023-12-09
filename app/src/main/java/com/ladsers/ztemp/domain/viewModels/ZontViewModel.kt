@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
+import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.AuthData
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
@@ -53,10 +54,12 @@ class ZontViewModel(
         _username.value = newValue
     }
 
-    private val _password: MutableState<String> = mutableStateOf(value = "")
-    val password: State<String> = _password
+    private var _password = ""
+    private val _passwordHidden: MutableState<String> = mutableStateOf(value = "")
+    val passwordHidden: State<String> = _passwordHidden
     fun updatePassword(newValue: String) {
-        _password.value = newValue
+        _password = newValue
+        _passwordHidden.value = if (newValue.isNotEmpty()) "********" else ""
     }
 
 
@@ -103,8 +106,8 @@ class ZontViewModel(
             } catch (e: IOException) {
                 DeviceStatusState.Error(
                     icon = Icons.Rounded.WifiOff,
-                    message = "Нет подключения к Интернету",
-                    retryAction = { getDevices() }
+                    messageRes = R.string.err_noInternetConnection,
+                    fixAction = { getDevices() }
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
@@ -112,8 +115,8 @@ class ZontViewModel(
                 } else {
                     DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
-                        message = "Ошибка сервера",
-                        retryAction = { getDevices() }
+                        messageRes = R.string.err_serverDidNotRespond,
+                        fixAction = { getDevices() }
                     )
                 }
             }
@@ -121,12 +124,12 @@ class ZontViewModel(
     }
 
     fun signIn() {
-        if (username.value.isEmpty() || password.value.isEmpty()) return
+        if (username.value.isEmpty() || _password.isEmpty()) return
 
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProcessing
             try {
-                val userInfo = zontRepository.getUserInfo(username.value, password.value)
+                val userInfo = zontRepository.getUserInfo(username.value, _password)
 
                 userInfo.token?.let { t ->
                     authData?.let { d ->
@@ -140,21 +143,21 @@ class ZontViewModel(
             } catch (e: IOException) {
                 deviceStatusState = DeviceStatusState.Error(
                     icon = Icons.Rounded.WifiOff,
-                    message = "Нет подключения к Интернету",
-                    retryAction = { signIn() }
+                    messageRes = R.string.err_noInternetConnection,
+                    fixAction = { signIn() }
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
                     deviceStatusState = DeviceStatusState.Error(
                         icon = Icons.Rounded.VpnKeyOff,
-                        message = "Неверный логин и/или пароль",
-                        retryAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
+                        messageRes = R.string.err_invalidUsernamePassword,
+                        fixAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
                     )
                 } else {
                     deviceStatusState = DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
-                        message = "Ошибка сервера",
-                        retryAction = { signIn() }
+                        messageRes = R.string.err_serverDidNotRespond,
+                        fixAction = { signIn() }
                     )
                 }
             }
@@ -173,8 +176,8 @@ class ZontViewModel(
             } catch (e: IOException) {
                 DeviceStatusState.Error(
                     icon = Icons.Rounded.WifiOff,
-                    message = "Нет подключения к Интернету",
-                    retryAction = { getDevices() }
+                    messageRes = R.string.err_noInternetConnection,
+                    fixAction = { getDevices() }
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
@@ -182,8 +185,8 @@ class ZontViewModel(
                 } else {
                     DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
-                        message = "Ошибка сервера",
-                        retryAction = { getDevices() }
+                        messageRes = R.string.err_serverDidNotRespond,
+                        fixAction = { getDevices() }
                     )
                 }
             }

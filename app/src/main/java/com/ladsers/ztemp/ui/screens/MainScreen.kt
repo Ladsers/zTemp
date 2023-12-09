@@ -48,8 +48,9 @@ fun MainScreen(
             onSettingsBtnClicked = onSettingsBtnClicked)
         is DeviceStatusState.Error -> ErrorScreen(
             deviceStatusState.icon,
-            deviceStatusState.message,
-            deviceStatusState.retryAction
+            deviceStatusState.messageRes,
+            deviceStatusState.fixAction,
+            deviceStatusState.btnTextRes
         )
     }
 }

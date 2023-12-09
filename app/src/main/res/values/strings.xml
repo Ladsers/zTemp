@@ -8,8 +8,18 @@
 
     <string name="cd_settings">Настройки</string>
     <string name="cd_setTemp">Установить температуру</string>
-    
+    <string name="cd_signIn">Войти в аккаунт</string>
+    <string name="cd_logOut">Выйти из аккаунта</string>
+
     <string name="title_activity_settings">Настройки</string>
+    <string name="title_signInZont">Вход в ZONT</string>
+    <string name="title_availableDevices">Доступные устройства</string>
+    
+    <string name="err_noInternetConnection">Нет подключения\nк интернету</string>
+    <string name="err_invalidUsernamePassword">Неверный логин\nи/или пароль</string>
+    <string name="err_serverDidNotRespond">Сервер не ответил\nна запрос</string>
+    <string name="err_deviceNotFound">Устройство не найдено на аккаунте. Выберите другое.</string>
+    <string name="err_authDataExpired">Данные пользователя устарели. Выполните вход в аккаунт.</string>
 
     <string name="updateAvailable">Доступно обновление</string>
     <string name="presetTemp1">Избранное 1</string>
@@ -25,5 +35,9 @@
 
     <string name="enter">Ввод</string>
     <string name="unknown">Неизвестно</string>
+    <string name="username">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="choose">Выбрать</string>
+    <string name="signIn">Войти</string>
 
 </resources>
