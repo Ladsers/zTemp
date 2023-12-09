@@ -31,6 +31,7 @@ import androidx.wear.compose.material.items
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.DeviceStatus
+import com.ladsers.ztemp.ui.components.ItemCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -77,7 +78,7 @@ fun DevicesScreen(
                 }
             }
             items(devices) { device ->
-                SettingsCard(
+                ItemCard(
                     title = device.name,
                     enabled = true,
                     action = { onDeviceSelected(device.id) })

@@ -25,7 +25,7 @@ class ZontViewModel(
     var userInfoState: UserInfoState by mutableStateOf(UserInfoState.InProcessing)
         private set
 
-    var deviceStatusState: DeviceStatusState by mutableStateOf(DeviceStatusState.InProcessing)
+    var deviceStatusState: DeviceStatusState by mutableStateOf(DeviceStatusState.InProgress)
         private set
 
     private val _targetTempState: MutableState<Double> = mutableStateOf(value = 0.0)
@@ -34,14 +34,6 @@ class ZontViewModel(
     //todo
     fun updateTargetTempState(newValue: Double) {
         _targetTempState.value = newValue
-    }
-
-    fun decreaseTargetTempState() {
-        _targetTempState.value -= 0.5 //todo
-    }
-
-    fun increaseTargetTempState() {
-        _targetTempState.value += 0.5 // todo
     }
 
     private val _username: MutableState<String> = mutableStateOf(value = "")
@@ -58,13 +50,6 @@ class ZontViewModel(
         _passwordHidden.value = if (newValue.isNotEmpty()) "********" else ""
     }
 
-
-    //TODO
-    var login: String = ""
-    var password1: String = ""
-    var token: String = ""
-    var deviceId: Int = 0
-
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
 
@@ -76,7 +61,7 @@ class ZontViewModel(
         viewModelScope.launch {
 
             if (!refreshing) {
-                deviceStatusState = DeviceStatusState.InProcessing
+                deviceStatusState = DeviceStatusState.InProgress
                 authData = authData ?: dataStoreRepository.getAuthData().first()
 
                 if (authData?.token.isNullOrEmpty()) {
@@ -129,7 +114,7 @@ class ZontViewModel(
         if (username.value.isEmpty() || _password.isEmpty()) return
 
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = DeviceStatusState.InProgress
             try {
                 val userInfo = zontRepository.getUserInfo(username.value, _password)
 
@@ -165,7 +150,7 @@ class ZontViewModel(
 
     fun getDevices() {
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = DeviceStatusState.InProgress
             deviceStatusState = try {
                 DeviceStatusState.NoDeviceSelected(
                     devices = zontRepository.getDevices(authData!!.token),
@@ -193,9 +178,9 @@ class ZontViewModel(
         }
     }
 
-    fun selectDevice(deviceId: Int) {
+    private fun selectDevice(deviceId: Int) {
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = DeviceStatusState.InProgress
             authData?.let { d ->
                 d.deviceId = deviceId
                 dataStoreRepository.saveAuthData(d)
@@ -204,9 +189,9 @@ class ZontViewModel(
         }
     }
 
-    fun resetDevice() {
+    private fun resetDevice() {
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = DeviceStatusState.InProgress
             authData = dataStoreRepository.getAuthData().first()
             authData!!.deviceId = 0
             dataStoreRepository.saveAuthData(authData!!)
@@ -214,50 +199,37 @@ class ZontViewModel(
         }
     }
 
-    fun logOut() {
+    private fun logOut() {
         viewModelScope.launch {
-            deviceStatusState = DeviceStatusState.InProcessing
+            deviceStatusState = DeviceStatusState.InProgress
             authData = AuthData(token = "", deviceId = 0)
             dataStoreRepository.saveAuthData(authData!!)
             getStatus()
         }
     }
 
-/*fun getDeviceStatus(token: String) {
-    viewModelScope.launch {
-        deviceStatusState = DeviceStatusState.InProcessing
-        deviceStatusState = try {
-            DeviceStatusState.Success(zontRepository.getDevices(token))
-        } catch (e: IOException) {
-            DeviceStatusState.Error(-1) //todo
-        } catch (e: HttpException) {
-            DeviceStatusState.Error(e.code())
+    fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
+        viewModelScope.launch {
+            zontRepository.setTemp(token, deviceId, targetTemp)
         }
     }
-}*/
 
-fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
-    viewModelScope.launch {
-        zontRepository.setTemp(token, deviceId, targetTemp)
-    }
-}
-
-companion object {
-    fun provideFactory(
-        zontRepository: ZontRepository,
-        dataStoreRepository: DataStoreRepository,
-        owner: SavedStateRegistryOwner,
-        defaultArgs: Bundle? = null
-    ): AbstractSavedStateViewModelFactory =
-        object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                key: String,
-                modelClass: Class<T>,
-                handle: SavedStateHandle
-            ): T {
-                return ZontViewModel(zontRepository, dataStoreRepository) as T
+    companion object {
+        fun provideFactory(
+            zontRepository: ZontRepository,
+            dataStoreRepository: DataStoreRepository,
+            owner: SavedStateRegistryOwner,
+            defaultArgs: Bundle? = null
+        ): AbstractSavedStateViewModelFactory =
+            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+                ): T {
+                    return ZontViewModel(zontRepository, dataStoreRepository) as T
+                }
             }
-        }
-}
+    }
 }

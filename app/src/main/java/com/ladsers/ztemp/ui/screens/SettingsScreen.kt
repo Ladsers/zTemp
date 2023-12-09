@@ -31,6 +31,7 @@ import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
+import com.ladsers.ztemp.ui.components.ItemCard
 import com.ladsers.ztemp.ui.components.TextInputCard
 import com.ladsers.ztemp.ui.theme.AlmostBlack
 import com.ladsers.ztemp.ui.theme.DarkOrange
@@ -157,33 +158,33 @@ fun SettingsScreen(
                 )
             }
             item {
-                SettingsCard(
+                ItemCard(
                     title = stringResource(id = R.string.supportDeveloper),
                     content = stringResource(id = R.string.supportDeveloperDescription)
                 )
             }
             item {
-                SettingsCard(
+                ItemCard(
                     title = stringResource(id = R.string.appWebsite),
                     enabled = true,
                     action = { goToWebsite("https://www.ladsers.com/ztemp") })
             }
             item {
-                SettingsCard(title = stringResource(id = R.string.createdBy))
+                ItemCard(title = stringResource(id = R.string.createdBy))
             }
             item {
-                SettingsCard(title = stringResource(id = R.string.licenseThirdParty),
+                ItemCard(title = stringResource(id = R.string.licenseThirdParty),
                     enabled = true,
                     action = { goToWebsite("https://www.ladsers.com/ztemp/license") })
             }
             item {
-                SettingsCard(
+                ItemCard(
                     title = stringResource(id = R.string.version),
                     content = BuildConfig.VERSION_NAME
                 )
             }
             item {
-                SettingsCard(title = stringResource(id = R.string.logOut))
+                ItemCard(title = stringResource(id = R.string.logOut))
             }
         }
         LaunchedEffect(Unit) {
@@ -215,25 +216,5 @@ fun ChangeDeviceCard(
         enabled = true
     ) {
         Text(deviceName, color = if (enabled) Teal else Color.Gray)
-    }
-}
-
-@Composable
-fun SettingsCard(
-    title: String,
-    content: String? = null,
-    enabled: Boolean = false,
-    action: () -> Unit = {}
-) {
-    TitleCard(
-        title = { Text(title, fontSize = 18.sp, color = Color.White) },
-        backgroundPainter = CardDefaults.cardBackgroundPainter(
-            startBackgroundColor = MaterialTheme.colors.surface,
-            endBackgroundColor = MaterialTheme.colors.surface
-        ),
-        onClick = action,
-        enabled = enabled
-    ) {
-        content?.let { Text(it, color = Teal) }
     }
 }

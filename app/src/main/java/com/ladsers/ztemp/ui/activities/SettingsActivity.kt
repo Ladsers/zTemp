@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.wear.activity.ConfirmationActivity
 import androidx.wear.remote.interactions.RemoteActivityHelper
-import com.ladsers.ztemp.ui.SettingsActivityContent
+import com.ladsers.ztemp.ui.activitycontents.SettingsActivityContent
 import com.ladsers.ztemp.ui.theme.ZTempTheme
 import java.util.concurrent.Executors
 

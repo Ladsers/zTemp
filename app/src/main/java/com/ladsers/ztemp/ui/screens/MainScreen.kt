@@ -1,48 +1,37 @@
 package com.ladsers.ztemp.ui.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 
-//@Composable
-//fun MainScreen(userInfoState: UserInfoState) {
-//    when(userInfoState) {
-//        is UserInfoState.InProcessing -> InProcessScreen()
-//        is UserInfoState.Success -> {
-//            StatusScreen(token = userInfoState.userInfo.token ?: "")
-//        }
-//        is UserInfoState.Error -> ErrorScreen(userInfoState.errorCode.toString())
-//    }
-//}
-
 @Composable
 fun MainScreen(
-    viewModel: ZontViewModel,
     deviceStatusState: DeviceStatusState,
-    targetTempState: State<Double>,
-    onUpdateTargetTemp: (Double) -> Unit,
-    onDecreaseBtnClicked: () -> Unit,
-    onIncreaseBtnClicked: () -> Unit,
-    onAcceptBtnClicked: () -> Unit,
+    viewModel: ZontViewModel,
     onSettingsBtnClicked: (Boolean, String, Double) -> Unit
 ) {
     when (deviceStatusState) {
-        is DeviceStatusState.InProcessing -> InProcessScreen()
-        is DeviceStatusState.NotSignedIn -> SignInScreen(viewModel = viewModel)
+        is DeviceStatusState.InProgress -> InProgressScreen()
+
+        is DeviceStatusState.NotSignedIn -> SignInScreen(viewModel)
+
         is DeviceStatusState.NoDeviceSelected -> DevicesScreen(
             deviceStatusState.devices,
             deviceStatusState.onDeviceSelected,
             deviceStatusState.onLogOutClicked
         )
-        is DeviceStatusState.GettingStatus -> StatusScreen2(
+
+        is DeviceStatusState.GettingStatus -> StatusScreen(
             deviceStatus = null,
             onSettingsBtnClicked = onSettingsBtnClicked
         )
-        is DeviceStatusState.Success -> StatusScreen2(
+
+        is DeviceStatusState.Success -> StatusScreen(
             deviceStatus = deviceStatusState.deviceStatus,
             onRefreshAction = { viewModel.getStatus(refreshing = true) },
-            onSettingsBtnClicked = onSettingsBtnClicked)
+            onSettingsBtnClicked = onSettingsBtnClicked
+        )
+
         is DeviceStatusState.Error -> ErrorScreen(
             deviceStatusState.error.icon,
             deviceStatusState.error.messageRes,

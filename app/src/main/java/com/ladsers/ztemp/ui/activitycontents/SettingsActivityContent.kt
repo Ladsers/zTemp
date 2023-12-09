@@ -1,4 +1,4 @@
-package com.ladsers.ztemp.ui
+package com.ladsers.ztemp.ui.activitycontents
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext

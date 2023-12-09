@@ -15,7 +15,7 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import com.ladsers.ztemp.ui.theme.wearColorPalette
 
 @Composable
-fun InProcessScreen() {
+fun InProgressScreen() {
     Column(
         modifier = Modifier.fillMaxWidth().fillMaxHeight(),
         verticalArrangement = Arrangement.Center,

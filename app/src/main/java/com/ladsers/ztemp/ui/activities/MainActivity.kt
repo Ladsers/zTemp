@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
-import com.ladsers.ztemp.ui.MainActivityContent
+import com.ladsers.ztemp.ui.activitycontents.MainActivityContent
 import com.ladsers.ztemp.ui.theme.ZTempTheme
 
 class MainActivity : ComponentActivity() {

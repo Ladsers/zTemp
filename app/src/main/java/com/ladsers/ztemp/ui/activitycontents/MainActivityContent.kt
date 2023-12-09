@@ -1,4 +1,4 @@
-package com.ladsers.ztemp.ui
+package com.ladsers.ztemp.ui.activitycontents
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -37,19 +37,8 @@ fun MainActivityContent(
         }
     ) {
         MainScreen(
-            zontViewModel,
             deviceStatusState = zontViewModel.deviceStatusState,
-            targetTempState = zontViewModel.targetTempState,
-            onIncreaseBtnClicked = zontViewModel::increaseTargetTempState,
-            onDecreaseBtnClicked = zontViewModel::decreaseTargetTempState,
-            onAcceptBtnClicked = {
-                zontViewModel.setTemp(
-                    zontViewModel.token,
-                    zontViewModel.deviceId,
-                    zontViewModel.targetTempState.value
-                )
-            },
-            onUpdateTargetTemp = zontViewModel::updateTargetTempState,
+            viewModel = zontViewModel,
             onSettingsBtnClicked = startSettingsActivity
         )
     }

@@ -1,27 +1,26 @@
 <resources>
     <string name="app_name">zTemp</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">From the Square world,\nHello, %1$s!</string>
 
+    <!-- Content Descriptions -->
     <string name="cd_settings">Настройки</string>
     <string name="cd_setTemp">Установить температуру</string>
     <string name="cd_signIn">Войти в аккаунт</string>
     <string name="cd_logOut">Выйти из аккаунта</string>
     <string name="cd_retry">Повторить попытку</string>
 
+    <!-- Titles -->
     <string name="title_activity_settings">Настройки</string>
     <string name="title_signInZont">Вход в ZONT</string>
     <string name="title_availableDevices">Доступные устройства</string>
-    
+
+    <!-- Errors -->
     <string name="err_noInternetConnection">Нет подключения\nк интернету</string>
     <string name="err_invalidUsernamePassword">Неверный логин\nи/или пароль</string>
     <string name="err_serverDidNotRespond">Сервер не ответил\nна запрос</string>
     <string name="err_deviceNotFound">Устройство не найдено на аккаунте. Выберите другое.</string>
     <string name="err_authDataExpired">Данные пользователя устарели. Выполните вход в аккаунт.</string>
 
+    <!-- Settings -->
     <string name="updateAvailable">Доступно обновление</string>
     <string name="presetTemp1">Избранное 1</string>
     <string name="presetTemp2">Избранное 2</string>
@@ -34,6 +33,7 @@
     <string name="version">Версия</string>
     <string name="logOut">Выйти из аккаунта</string>
 
+    <!-- Common -->
     <string name="enter">Ввод</string>
     <string name="unknown">Неизвестно</string>
     <string name="username">Логин</string>
