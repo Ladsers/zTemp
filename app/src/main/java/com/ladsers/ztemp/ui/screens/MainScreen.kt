@@ -35,9 +35,6 @@ fun MainScreen(
             deviceStatusState.onDeviceSelected,
             deviceStatusState.onLogOutClicked
         )
-        is DeviceStatusState.SignInError -> SignInErrorScreen {
-            viewModel.logOut()
-        }
         is DeviceStatusState.GettingStatus -> StatusScreen2(
             deviceStatus = null,
             onSettingsBtnClicked = onSettingsBtnClicked
@@ -47,10 +44,10 @@ fun MainScreen(
             onRefreshAction = { viewModel.getStatus(refreshing = true) },
             onSettingsBtnClicked = onSettingsBtnClicked)
         is DeviceStatusState.Error -> ErrorScreen(
-            deviceStatusState.icon,
-            deviceStatusState.messageRes,
-            deviceStatusState.fixAction,
-            deviceStatusState.btnTextRes
+            deviceStatusState.error.icon,
+            deviceStatusState.error.messageRes,
+            deviceStatusState.error.btnTextRes,
+            deviceStatusState.fixAction
         )
     }
 }

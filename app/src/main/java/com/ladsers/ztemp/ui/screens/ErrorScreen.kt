@@ -27,8 +27,8 @@ import com.ladsers.ztemp.R
 fun ErrorScreen(
     icon: ImageVector,
     @StringRes messageRes: Int,
-    fixAction: () -> Unit,
-    @StringRes btnTextRes: Int? = null
+    @StringRes btnTextRes: Int?,
+    fixAction: () -> Unit
 ) {
     Column(
         modifier = Modifier

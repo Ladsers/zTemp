@@ -1,7 +1,6 @@
 package com.ladsers.ztemp.domain.states
 
-import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.ladsers.ztemp.data.enums.StatusError
 import com.ladsers.ztemp.data.models.DeviceStatus
 
 interface DeviceStatusState {
@@ -12,15 +11,7 @@ interface DeviceStatusState {
         val onDeviceSelected: (Int) -> Unit,
         val onLogOutClicked: () -> Unit
     ) : DeviceStatusState
-
-    object SignInError : DeviceStatusState
     object GettingStatus : DeviceStatusState
     data class Success(val deviceStatus: DeviceStatus) : DeviceStatusState
-    data class Error(
-        val icon: ImageVector,
-        @StringRes val messageRes: Int,
-        val fixAction: () -> Unit,
-        @StringRes val btnTextRes: Int? = null
-    ) :
-        DeviceStatusState
+    data class Error(val error: StatusError, val fixAction: () -> Unit) : DeviceStatusState
 }

@@ -1,15 +1,10 @@
 package com.ladsers.ztemp.domain.viewModels
 
 import android.os.Bundle
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Error
-import androidx.compose.material.icons.rounded.SearchOff
-import androidx.compose.material.icons.rounded.VpnKeyOff
-import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
-import com.ladsers.ztemp.R
+import com.ladsers.ztemp.data.enums.StatusError
 import com.ladsers.ztemp.data.models.AuthData
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
@@ -104,33 +99,26 @@ class ZontViewModel(
                 )
 
                 deviceStatusState =
-                    if (deviceStatus.id != 0)
-                        DeviceStatusState.Success(deviceStatus)
+                    if (deviceStatus.id != 0) DeviceStatusState.Success(deviceStatus)
                     else DeviceStatusState.Error(
-                        icon = Icons.Rounded.SearchOff,
-                        messageRes = R.string.err_deviceNotFound,
-                        fixAction = { resetDevice() },
-                        btnTextRes = R.string.choose
+                        error = StatusError.DEVICE_NOT_FOUND,
+                        fixAction = ::resetDevice
                     )
             } catch (e: IOException) {
                 deviceStatusState = DeviceStatusState.Error(
-                    icon = Icons.Rounded.WifiOff,
-                    messageRes = R.string.err_noInternetConnection,
-                    fixAction = { getDevices() }
+                    error = StatusError.NO_INTERNET_CONNECTION,
+                    fixAction = ::getStatus
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
                     deviceStatusState = DeviceStatusState.Error(
-                        icon = Icons.Rounded.VpnKeyOff,
-                        messageRes = R.string.err_authDataExpired,
-                        fixAction = { logOut() },
-                        btnTextRes = R.string.signIn
+                        error = StatusError.AUTH_ERROR,
+                        fixAction = ::logOut
                     )
                 } else {
                     deviceStatusState = DeviceStatusState.Error(
-                        icon = Icons.Rounded.Error,
-                        messageRes = R.string.err_serverDidNotRespond,
-                        fixAction = { getDevices() }
+                        error = StatusError.SERVER_ERROR,
+                        fixAction = ::getStatus
                     )
                 }
             }
@@ -156,22 +144,19 @@ class ZontViewModel(
 
             } catch (e: IOException) {
                 deviceStatusState = DeviceStatusState.Error(
-                    icon = Icons.Rounded.WifiOff,
-                    messageRes = R.string.err_noInternetConnection,
-                    fixAction = { signIn() }
+                    error = StatusError.NO_INTERNET_CONNECTION,
+                    fixAction = ::signIn
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
                     deviceStatusState = DeviceStatusState.Error(
-                        icon = Icons.Rounded.VpnKeyOff,
-                        messageRes = R.string.err_invalidUsernamePassword,
+                        error = StatusError.INVALID_AUTH_DATA,
                         fixAction = { deviceStatusState = DeviceStatusState.NotSignedIn }
                     )
                 } else {
                     deviceStatusState = DeviceStatusState.Error(
-                        icon = Icons.Rounded.Error,
-                        messageRes = R.string.err_serverDidNotRespond,
-                        fixAction = { signIn() }
+                        error = StatusError.SERVER_ERROR,
+                        fixAction = ::signIn
                     )
                 }
             }
@@ -185,27 +170,23 @@ class ZontViewModel(
                 DeviceStatusState.NoDeviceSelected(
                     devices = zontRepository.getDevices(authData!!.token),
                     onDeviceSelected = ::selectDevice,
-                    onLogOutClicked = { logOut() }
+                    onLogOutClicked = ::logOut
                 )
             } catch (e: IOException) {
                 DeviceStatusState.Error(
-                    icon = Icons.Rounded.WifiOff,
-                    messageRes = R.string.err_noInternetConnection,
-                    fixAction = { getDevices() }
+                    error = StatusError.NO_INTERNET_CONNECTION,
+                    fixAction = ::getDevices
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
                     DeviceStatusState.Error(
-                        icon = Icons.Rounded.VpnKeyOff,
-                        messageRes = R.string.err_authDataExpired,
-                        fixAction = { logOut() },
-                        btnTextRes = R.string.signIn
+                        error = StatusError.AUTH_ERROR,
+                        fixAction = ::logOut
                     )
                 } else {
                     DeviceStatusState.Error(
-                        icon = Icons.Rounded.Error,
-                        messageRes = R.string.err_serverDidNotRespond,
-                        fixAction = { getDevices() }
+                        error = StatusError.SERVER_ERROR,
+                        fixAction = ::getDevices
                     )
                 }
             }
