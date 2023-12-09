@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.ladsers.ztemp.data.models.AppParams
+import com.ladsers.ztemp.data.models.AuthData
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.round
 
 class SettingsViewModel(
@@ -54,6 +56,21 @@ class SettingsViewModel(
 
     init {
         loadAppParams()
+    }
+
+    fun resetDevice() {
+        runBlocking {
+            val authData = dataStoreRepository.getAuthData().first()
+            authData.deviceId = 0
+            dataStoreRepository.saveAuthData(authData)
+        }
+    }
+
+    fun logOut() {
+        runBlocking {
+            val authData = AuthData(token = "", deviceId = 0)
+            dataStoreRepository.saveAuthData(authData)
+        }
     }
 
     private fun loadAppParams() {

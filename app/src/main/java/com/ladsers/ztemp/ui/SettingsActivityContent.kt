@@ -13,6 +13,7 @@ fun SettingsActivityContent(
     updateAvailable: Boolean,
     deviceName: String,
     tempStep: Double,
+    finishActivity: () -> Unit,
     goToWebsite: (String) -> Unit
 ) {
     val settingsViewModel: SettingsViewModel = viewModel(
@@ -23,5 +24,5 @@ fun SettingsActivityContent(
         )
     )
 
-    SettingsScreen(settingsViewModel, updateAvailable, deviceName, goToWebsite)
+    SettingsScreen(settingsViewModel, updateAvailable, deviceName, finishActivity, goToWebsite)
 }

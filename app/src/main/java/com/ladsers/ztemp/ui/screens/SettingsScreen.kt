@@ -32,6 +32,7 @@ import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
 import com.ladsers.ztemp.ui.components.TextInputCard
+import com.ladsers.ztemp.ui.theme.AlmostBlack
 import com.ladsers.ztemp.ui.theme.DarkOrange
 import com.ladsers.ztemp.ui.theme.Teal
 import kotlinx.coroutines.launch
@@ -42,6 +43,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     updateAvailable: Boolean,
     deviceName: String,
+    finishActivity: () -> Unit,
     goToWebsite: (String) -> Unit
 ) {
 
@@ -106,10 +108,21 @@ fun SettingsScreen(
                 }
             }
             item {
-                SettingsCard(
-                    title = stringResource(id = R.string.changeDevice),
-                    content = deviceName
-                )
+                ChangeDeviceCard(
+                    deviceName = deviceName,
+                    enabled = viewModel.addFeatures.value,
+                    action = {
+                        viewModel.resetDevice()
+                        finishActivity()
+                    },
+                    disabledAction = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(
+                                if (updateAvailable) 5 else 4,
+                                0
+                            )
+                        }
+                    })
             }
             item {
                 TextInputCard(
@@ -176,6 +189,32 @@ fun SettingsScreen(
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
+    }
+}
+
+@Composable
+fun ChangeDeviceCard(
+    deviceName: String,
+    enabled: Boolean,
+    action: () -> Unit,
+    disabledAction: () -> Unit
+) {
+    TitleCard(
+        title = {
+            Text(
+                stringResource(id = R.string.changeDevice),
+                fontSize = 18.sp,
+                color = if (enabled) Color.White else Color.Gray
+            )
+        },
+        backgroundPainter = CardDefaults.cardBackgroundPainter(
+            startBackgroundColor = if (enabled) MaterialTheme.colors.surface else AlmostBlack,
+            endBackgroundColor = if (enabled) MaterialTheme.colors.surface else AlmostBlack
+        ),
+        onClick = { if (enabled) action() else disabledAction() },
+        enabled = true
+    ) {
+        Text(deviceName, color = if (enabled) Teal else Color.Gray)
     }
 }
 

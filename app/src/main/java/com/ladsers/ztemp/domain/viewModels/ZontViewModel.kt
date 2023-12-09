@@ -21,7 +21,7 @@ import retrofit2.HttpException
 class ZontViewModel(
     private val zontRepository: ZontRepository,
     private val dataStoreRepository: DataStoreRepository
-) : ViewModel() {
+) : ViewModel(), DefaultLifecycleObserver {
 
     private var authData: AuthData? = null
 
@@ -66,9 +66,10 @@ class ZontViewModel(
     var token: String = ""
     var deviceId: Int = 0
 
-    //TODO
-    init {
-        //getDeviceStatus(token)
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+
+        authData = null
         getStatus()
     }
 

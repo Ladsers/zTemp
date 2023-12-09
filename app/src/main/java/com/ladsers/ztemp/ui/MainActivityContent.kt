@@ -17,7 +17,7 @@ import com.ladsers.ztemp.ui.screens.MainScreen
 @Composable
 fun MainActivityContent(
     startSettingsActivity: (Boolean, String, Double) -> Unit
-) {
+): ZontViewModel {
     val zontViewModel: ZontViewModel = viewModel(
         factory = ZontViewModel.provideFactory(
             (LocalContext.current.applicationContext as ZtempApplication).container.zontRepository,
@@ -53,4 +53,6 @@ fun MainActivityContent(
             onSettingsBtnClicked = startSettingsActivity
         )
     }
+
+    return zontViewModel
 }

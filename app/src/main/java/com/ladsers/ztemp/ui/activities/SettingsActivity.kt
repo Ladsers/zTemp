@@ -25,6 +25,7 @@ class SettingsActivity : ComponentActivity() {
                     updateAvailable,
                     deviceName,
                     tempStep,
+                    finishActivity = { finish() },
                     goToWebsite = { url -> goToWebsite(url) })
             }
         }
