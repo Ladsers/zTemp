@@ -44,8 +44,8 @@ class NetworkZontRepository(
         val device = zontService.getDevices(token).devices.firstOrNull { d -> d.id == deviceId }
 
         return DeviceStatus(
-            id = device?.id ?: 0, //todo remove
-            name = device?.name ?: "", //todo "unknown"
+            id = device?.id ?: 0,
+            name = device?.name ?: "???",
             currentTemp = device?.thermometers?.firstOrNull()?.lastValue,
             targetTemp = device?.io?.lastBoilerState?.targetTemp,
             tempStep = device?.tempstep ?: 1.0,

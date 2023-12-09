@@ -3,6 +3,7 @@ package com.ladsers.ztemp.domain.viewModels
 import android.os.Bundle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.VpnKeyOff
 import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.runtime.*
@@ -96,24 +97,37 @@ class ZontViewModel(
 
             deviceStatusState = DeviceStatusState.GettingStatus
 
-            deviceStatusState = try {
-                DeviceStatusState.Success(
-                    deviceStatus = zontRepository.getDeviceStatus(
-                        authData!!.token,
-                        authData!!.deviceId
-                    )
+            try {
+                val deviceStatus = zontRepository.getDeviceStatus(
+                    authData!!.token,
+                    authData!!.deviceId
                 )
+
+                deviceStatusState =
+                    if (deviceStatus.id != 0)
+                        DeviceStatusState.Success(deviceStatus)
+                    else DeviceStatusState.Error(
+                        icon = Icons.Rounded.SearchOff,
+                        messageRes = R.string.err_deviceNotFound,
+                        fixAction = { resetDevice() },
+                        btnTextRes = R.string.choose
+                    )
             } catch (e: IOException) {
-                DeviceStatusState.Error(
+                deviceStatusState = DeviceStatusState.Error(
                     icon = Icons.Rounded.WifiOff,
                     messageRes = R.string.err_noInternetConnection,
                     fixAction = { getDevices() }
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
-                    DeviceStatusState.SignInError
+                    deviceStatusState = DeviceStatusState.Error(
+                        icon = Icons.Rounded.VpnKeyOff,
+                        messageRes = R.string.err_authDataExpired,
+                        fixAction = { logOut() },
+                        btnTextRes = R.string.signIn
+                    )
                 } else {
-                    DeviceStatusState.Error(
+                    deviceStatusState = DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
                         messageRes = R.string.err_serverDidNotRespond,
                         fixAction = { getDevices() }
@@ -181,7 +195,12 @@ class ZontViewModel(
                 )
             } catch (e: HttpException) {
                 if (e.code() == 403) {
-                    DeviceStatusState.SignInError
+                    DeviceStatusState.Error(
+                        icon = Icons.Rounded.VpnKeyOff,
+                        messageRes = R.string.err_authDataExpired,
+                        fixAction = { logOut() },
+                        btnTextRes = R.string.signIn
+                    )
                 } else {
                     DeviceStatusState.Error(
                         icon = Icons.Rounded.Error,
@@ -195,6 +214,7 @@ class ZontViewModel(
 
     fun selectDevice(deviceId: Int) {
         viewModelScope.launch {
+            deviceStatusState = DeviceStatusState.InProcessing
             authData?.let { d ->
                 d.deviceId = deviceId
                 dataStoreRepository.saveAuthData(d)
@@ -203,52 +223,60 @@ class ZontViewModel(
         }
     }
 
-    fun logOut() {
+    fun resetDevice() {
         viewModelScope.launch {
-            authData?.let { d ->
-                d.token = ""
-                d.deviceId = 0
-                dataStoreRepository.saveAuthData(d)
-            }
+            deviceStatusState = DeviceStatusState.InProcessing
+            authData = dataStoreRepository.getAuthData().first()
+            authData!!.deviceId = 0
+            dataStoreRepository.saveAuthData(authData!!)
             getStatus()
         }
     }
 
-    /*fun getDeviceStatus(token: String) {
+    fun logOut() {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProcessing
-            deviceStatusState = try {
-                DeviceStatusState.Success(zontRepository.getDevices(token))
-            } catch (e: IOException) {
-                DeviceStatusState.Error(-1) //todo
-            } catch (e: HttpException) {
-                DeviceStatusState.Error(e.code())
-            }
-        }
-    }*/
-
-    fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
-        viewModelScope.launch {
-            zontRepository.setTemp(token, deviceId, targetTemp)
+            authData = AuthData(token = "", deviceId = 0)
+            dataStoreRepository.saveAuthData(authData!!)
+            getStatus()
         }
     }
 
-    companion object {
-        fun provideFactory(
-            zontRepository: ZontRepository,
-            dataStoreRepository: DataStoreRepository,
-            owner: SavedStateRegistryOwner,
-            defaultArgs: Bundle? = null
-        ): AbstractSavedStateViewModelFactory =
-            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    key: String,
-                    modelClass: Class<T>,
-                    handle: SavedStateHandle
-                ): T {
-                    return ZontViewModel(zontRepository, dataStoreRepository) as T
-                }
-            }
+/*fun getDeviceStatus(token: String) {
+    viewModelScope.launch {
+        deviceStatusState = DeviceStatusState.InProcessing
+        deviceStatusState = try {
+            DeviceStatusState.Success(zontRepository.getDevices(token))
+        } catch (e: IOException) {
+            DeviceStatusState.Error(-1) //todo
+        } catch (e: HttpException) {
+            DeviceStatusState.Error(e.code())
+        }
     }
+}*/
+
+fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
+    viewModelScope.launch {
+        zontRepository.setTemp(token, deviceId, targetTemp)
+    }
+}
+
+companion object {
+    fun provideFactory(
+        zontRepository: ZontRepository,
+        dataStoreRepository: DataStoreRepository,
+        owner: SavedStateRegistryOwner,
+        defaultArgs: Bundle? = null
+    ): AbstractSavedStateViewModelFactory =
+        object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                key: String,
+                modelClass: Class<T>,
+                handle: SavedStateHandle
+            ): T {
+                return ZontViewModel(zontRepository, dataStoreRepository) as T
+            }
+        }
+}
 }

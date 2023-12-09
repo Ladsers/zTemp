@@ -10,6 +10,7 @@
     <string name="cd_setTemp">Установить температуру</string>
     <string name="cd_signIn">Войти в аккаунт</string>
     <string name="cd_logOut">Выйти из аккаунта</string>
+    <string name="cd_retry">Повторить попытку</string>
 
     <string name="title_activity_settings">Настройки</string>
     <string name="title_signInZont">Вход в ZONT</string>

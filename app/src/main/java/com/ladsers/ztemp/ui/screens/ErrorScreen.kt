@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
+import com.ladsers.ztemp.R
 
 @Composable
 fun ErrorScreen(
@@ -60,7 +61,10 @@ fun ErrorScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             } ?: run {
-                Icon(imageVector = Icons.Rounded.Refresh, contentDescription = "retry")
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(id = R.string.cd_retry)
+                )
             }
         }
     }
