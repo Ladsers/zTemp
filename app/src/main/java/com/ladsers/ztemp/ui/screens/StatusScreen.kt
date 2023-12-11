@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.*
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.DeviceStatus
+import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.ui.theme.wearColorPalette
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,6 +25,8 @@ import java.time.format.DateTimeFormatter
 fun StatusScreen(
     deviceStatus: DeviceStatus?,
     onSettingsBtnClicked: (Boolean, String, Double) -> Unit,
+    prepareTempSetter: () -> TempSetter,
+    startTempSetterActivity: (TempSetter) -> Unit,
     onRefreshAction: () -> Unit = {}
 ) {
     Column(
@@ -154,7 +157,7 @@ fun StatusScreen(
             ) {
 
                 Button(
-                    onClick = { /* todo */ },
+                    onClick = { startTempSetterActivity(prepareTempSetter()) },
                     colors = ButtonDefaults.primaryButtonColors(),
                     modifier = Modifier.padding(end = 8.dp),
                     enabled = deviceStatus?.online == true
@@ -176,7 +179,7 @@ fun StatusScreen(
                     },
                     colors = ButtonDefaults.secondaryButtonColors(),
                     modifier = Modifier.padding(start = 8.dp),
-                    enabled = deviceStatus?.online == true
+                    enabled = deviceStatus?.online == true // todo ?
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,

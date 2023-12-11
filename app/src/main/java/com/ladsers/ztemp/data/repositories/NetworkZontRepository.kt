@@ -6,6 +6,7 @@ import com.ladsers.ztemp.data.models.UserInfo
 import com.ladsers.ztemp.data.models.zont.DevicesRequest
 import com.ladsers.ztemp.data.models.zont.ThermostatTargetRequest
 import com.ladsers.ztemp.data.models.zont.ThermostatTargetTemps
+import com.ladsers.ztemp.data.models.zont.ThermostatTargetTemps0
 import com.ladsers.ztemp.data.models.zont.ThermostatTargetTemps1
 import okhttp3.Credentials
 
@@ -31,9 +32,10 @@ class NetworkZontRepository(
             DeviceStatus(
                 id = device.id!!,
                 name = device.name!!,
-                currentTemp = device.thermometers.firstOrNull()?.lastValue, //todo remove?
-                targetTemp = device.io?.lastBoilerState?.targetTemp,
                 tempStep = 1.0,
+                currentTemp = null,
+                targetTemp = null,
+                targetThermostatId = null,
                 mainPower = null,
                 online = null
             )
@@ -43,22 +45,46 @@ class NetworkZontRepository(
     override suspend fun getDeviceStatus(token: String, deviceId: Int): DeviceStatus {
         val device = zontService.getDevices(token).devices.firstOrNull { d -> d.id == deviceId }
 
+        var targetTemp: Double?
+        var targetThermostatId: Int?
+
+        if (device?.thermostatTargetTemps?.thermostatTargetTemps1?.manual == true) {
+            targetTemp = device.thermostatTargetTemps!!.thermostatTargetTemps1!!.temp
+            targetThermostatId = 1
+        } else if (device?.thermostatTargetTemps?.thermostatTargetTemps0?.manual == true) {
+            targetTemp = device.thermostatTargetTemps!!.thermostatTargetTemps0!!.temp
+            targetThermostatId = 0
+        } else {
+            targetTemp = null
+            targetThermostatId = null
+        }
+
         return DeviceStatus(
             id = device?.id ?: 0,
             name = device?.name ?: "???",
             currentTemp = device?.thermometers?.firstOrNull()?.lastValue,
-            targetTemp = device?.io?.lastBoilerState?.targetTemp,
+            targetTemp = targetTemp,
+            targetThermostatId = targetThermostatId,
             tempStep = device?.tempstep ?: 1.0,
             mainPower = device?.io?.powerSource == "main",
             online = device?.online
         )
     }
 
-    override suspend fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
+    override suspend fun setTemp(
+        token: String,
+        deviceId: Int,
+        targetThermostatId: Int,
+        targetTemp: Double
+    ) {
         val thermostatTargetRequest = ThermostatTargetRequest(
             id = deviceId,
-            thermostatTargetTemps = ThermostatTargetTemps(
+            thermostatTargetTemps = if (targetThermostatId == 1) ThermostatTargetTemps(
                 thermostatTargetTemps1 = ThermostatTargetTemps1(
+                    temp = targetTemp
+                )
+            ) else ThermostatTargetTemps(
+                thermostatTargetTemps0 = ThermostatTargetTemps0(
                     temp = targetTemp
                 )
             )

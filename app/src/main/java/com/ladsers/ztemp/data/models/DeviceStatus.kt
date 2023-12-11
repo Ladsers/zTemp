@@ -6,6 +6,7 @@ data class DeviceStatus(
     val tempStep: Double,
     val currentTemp: Double?,
     val targetTemp: Double?,
+    val targetThermostatId: Int?,
     val mainPower: Boolean?,
     val online: Boolean?
 )

@@ -7,5 +7,10 @@ interface ZontRepository {
     suspend fun getUserInfo(login: String, password: String): UserInfo
     suspend fun getDevices(token: String): List<DeviceStatus>
     suspend fun getDeviceStatus(token: String, deviceId: Int): DeviceStatus
-    suspend fun setTemp(token: String, deviceId: Int, targetTemp: Double)
+    suspend fun setTemp(
+        token: String,
+        deviceId: Int,
+        targetThermostatId: Int,
+        targetTemp: Double
+    )
 }

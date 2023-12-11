@@ -7,9 +7,12 @@
     <string name="cd_signIn">Войти в аккаунт</string>
     <string name="cd_logOut">Выйти из аккаунта</string>
     <string name="cd_retry">Повторить попытку</string>
+    <string name="cd_decreaseTemp">Уменьшить температуру</string>
+    <string name="cd_increaseTemp">Увеличить температуру</string>
 
     <!-- Titles -->
     <string name="title_activity_settings">Настройки</string>
+    <string name="title_activity_tempSetter">Установить температуру</string>
     <string name="title_signInZont">Вход в ZONT</string>
     <string name="title_availableDevices">Доступные устройства</string>
 

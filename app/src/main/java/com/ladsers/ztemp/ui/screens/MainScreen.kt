@@ -1,6 +1,7 @@
 package com.ladsers.ztemp.ui.screens
 
 import androidx.compose.runtime.Composable
+import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 
@@ -8,6 +9,7 @@ import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 fun MainScreen(
     deviceStatusState: DeviceStatusState,
     viewModel: ZontViewModel,
+    onTempSetterBtnClicked: (TempSetter) -> Unit,
     onSettingsBtnClicked: (Boolean, String, Double) -> Unit
 ) {
     when (deviceStatusState) {
@@ -23,13 +25,17 @@ fun MainScreen(
 
         is DeviceStatusState.GettingStatus -> StatusScreen(
             deviceStatus = null,
-            onSettingsBtnClicked = onSettingsBtnClicked
+            onSettingsBtnClicked = onSettingsBtnClicked,
+            prepareTempSetter = viewModel::prepareTempSetter,
+            startTempSetterActivity = onTempSetterBtnClicked
         )
 
         is DeviceStatusState.Success -> StatusScreen(
             deviceStatus = deviceStatusState.deviceStatus,
             onRefreshAction = { viewModel.getStatus(refreshing = true) },
-            onSettingsBtnClicked = onSettingsBtnClicked
+            onSettingsBtnClicked = onSettingsBtnClicked,
+            prepareTempSetter = viewModel::prepareTempSetter,
+            startTempSetterActivity = onTempSetterBtnClicked
         )
 
         is DeviceStatusState.Error -> ErrorScreen(

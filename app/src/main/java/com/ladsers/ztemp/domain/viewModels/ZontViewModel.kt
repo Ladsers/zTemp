@@ -5,21 +5,27 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
 import com.ladsers.ztemp.data.enums.StatusError
+import com.ladsers.ztemp.data.models.AppParams
 import com.ladsers.ztemp.data.models.AuthData
+import com.ladsers.ztemp.data.models.DeviceStatus
+import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.states.UserInfoState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okio.IOException
 import retrofit2.HttpException
+import kotlin.math.round
 
 class ZontViewModel(
     private val zontRepository: ZontRepository,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel(), DefaultLifecycleObserver {
 
+    private lateinit var deviceStatus: DeviceStatus
     private var authData: AuthData? = null
 
     var userInfoState: UserInfoState by mutableStateOf(UserInfoState.InProcessing)
@@ -78,7 +84,7 @@ class ZontViewModel(
             deviceStatusState = DeviceStatusState.GettingStatus
 
             try {
-                val deviceStatus = zontRepository.getDeviceStatus(
+                deviceStatus = zontRepository.getDeviceStatus(
                     authData!!.token,
                     authData!!.deviceId
                 )
@@ -95,13 +101,13 @@ class ZontViewModel(
                     fixAction = ::getStatus
                 )
             } catch (e: HttpException) {
-                if (e.code() == 403) {
-                    deviceStatusState = DeviceStatusState.Error(
+                deviceStatusState = if (e.code() == 403) {
+                    DeviceStatusState.Error(
                         error = StatusError.AUTH_ERROR,
                         fixAction = ::logOut
                     )
                 } else {
-                    deviceStatusState = DeviceStatusState.Error(
+                    DeviceStatusState.Error(
                         error = StatusError.SERVER_ERROR,
                         fixAction = ::getStatus
                     )
@@ -208,10 +214,59 @@ class ZontViewModel(
         }
     }
 
-    fun setTemp(token: String, deviceId: Int, targetTemp: Double) {
-        viewModelScope.launch {
-            zontRepository.setTemp(token, deviceId, targetTemp)
+    fun prepareTempSetter() : TempSetter {
+        val appParams : AppParams
+
+        runBlocking {
+            appParams = dataStoreRepository.getAppParams().first()
         }
+
+        fun prepareTemp(tempValue: Double): Double {
+            val multiplier = 10000
+            return if ((tempValue * multiplier).toInt() % (tempValue * multiplier).toInt() == 0) {
+                tempValue
+            } else {
+                round(tempValue)
+            }
+        }
+
+        return TempSetter(
+            targetTemp = deviceStatus.targetTemp!!,
+            tempStep = deviceStatus.tempStep,
+            presetTemp1 = prepareTemp(appParams.presetTemp1),
+            presetTemp2 = prepareTemp(appParams.presetTemp2),
+            addFeatures = appParams.addFeatures
+        )
+    }
+
+    fun setTemp(targetTemp: Double) : Boolean {
+        //todo
+        deviceStatusState = DeviceStatusState.InProgress
+        var result = false
+
+        runBlocking {
+
+            try {
+                deviceStatus.targetThermostatId?.let { targetThermostatId ->
+                    zontRepository.setTemp(
+                        authData!!.token,
+                        authData!!.deviceId,
+                        targetThermostatId,
+                        targetTemp
+                    )
+                } ?: run {
+                    result = false
+                    return@runBlocking
+                }
+                result = true
+            } catch (e: IOException) {
+                result = false
+            } catch (e: HttpException) {
+                result = false
+            }
+        }
+
+        return result
     }
 
     companion object {

@@ -10,12 +10,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.TimeTextDefaults
+import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.ZtempApplication
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 import com.ladsers.ztemp.ui.screens.MainScreen
 
 @Composable
 fun MainActivityContent(
+    startTempSetterActivity: (TempSetter) -> Unit,
     startSettingsActivity: (Boolean, String, Double) -> Unit
 ): ZontViewModel {
     val zontViewModel: ZontViewModel = viewModel(
@@ -39,6 +41,7 @@ fun MainActivityContent(
         MainScreen(
             deviceStatusState = zontViewModel.deviceStatusState,
             viewModel = zontViewModel,
+            onTempSetterBtnClicked = startTempSetterActivity,
             onSettingsBtnClicked = startSettingsActivity
         )
     }
