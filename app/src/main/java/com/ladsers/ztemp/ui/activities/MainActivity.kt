@@ -5,8 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
 import androidx.wear.activity.ConfirmationActivity
+import com.ladsers.ztemp.R
+import com.ladsers.ztemp.data.enums.ConfirmationType
 import com.ladsers.ztemp.data.enums.TempSetterKey
 import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.contracts.TempSetterContract
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
             TempSetterKey.INPUT_KEY.value,
             this,
             TempSetterContract()
-        ) { temp -> temp?.let { if (viewModel.setTemp(it)) showConfirmation(it) else showFailure() } }
+        ) { temp -> temp?.let { viewModel.setTemp(it) } }
 
         setContent {
             ZTempTheme {
@@ -44,6 +45,12 @@ class MainActivity : ComponentActivity() {
                             deviceName,
                             tempStep
                         )
+                    },
+                    showConfirmationActivity = fun(
+                        confirmationType: ConfirmationType,
+                        setTemp: Double?
+                    ) {
+                        showConfirmationActivity(confirmationType, setTemp)
                     })
 
                 lifecycle.addObserver(viewModel)
@@ -73,34 +80,21 @@ class MainActivity : ComponentActivity() {
     private fun startTempSetterActivity(tempSetter: TempSetter) =
         tempSetterLauncher.launch(tempSetter)
 
-    private fun showConfirmation(setTemp: Double) {
+    private fun showConfirmationActivity(confirmationType: ConfirmationType, setTemp: Double?) {
         startActivity(
             Intent(this, ConfirmationActivity::class.java)
                 .putExtra(
                     ConfirmationActivity.EXTRA_ANIMATION_TYPE,
-                    ConfirmationActivity.SUCCESS_ANIMATION
+                    if (confirmationType == ConfirmationType.SUCCESS) ConfirmationActivity.SUCCESS_ANIMATION
+                    else ConfirmationActivity.FAILURE_ANIMATION
                 )
                 .putExtra(
                     ConfirmationActivity.EXTRA_MESSAGE,
-                    "Установлено $setTemp°C"
-                )
-        )
-    }
-
-    private fun showFailure() {
-        startActivity(
-            Intent(this, ConfirmationActivity::class.java)
-                .putExtra(
-                    ConfirmationActivity.EXTRA_ANIMATION_TYPE,
-                    ConfirmationActivity.FAILURE_ANIMATION
-                )
-                .putExtra(
-                    ConfirmationActivity.EXTRA_ANIMATION_DURATION_MILLIS,
-                    1700
-                )
-                .putExtra(
-                    ConfirmationActivity.EXTRA_MESSAGE,
-                    "Сбой установки температуры"
+                    if (confirmationType == ConfirmationType.SUCCESS) getString(
+                        R.string.setTempSuccess,
+                        setTemp
+                    )
+                    else getString(R.string.setTempFailure)
                 )
         )
     }

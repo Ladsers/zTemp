@@ -43,5 +43,7 @@
     <string name="password">Пароль</string>
     <string name="choose">Выбрать</string>
     <string name="signIn">Войти</string>
+    <string name="setTempSuccess">Установлено %1$,.1f°C</string>
+    <string name="setTempFailure">"Сбой установки температуры"</string>
 
 </resources>

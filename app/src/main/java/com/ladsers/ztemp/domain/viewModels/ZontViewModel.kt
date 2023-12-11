@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
+import com.ladsers.ztemp.data.enums.ConfirmationType
 import com.ladsers.ztemp.data.enums.StatusError
 import com.ladsers.ztemp.data.models.AppParams
 import com.ladsers.ztemp.data.models.AuthData
@@ -22,7 +23,8 @@ import kotlin.math.round
 
 class ZontViewModel(
     private val zontRepository: ZontRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val showConfirmationActivity: (ConfirmationType, Double?) -> Unit
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private lateinit var deviceStatus: DeviceStatus
@@ -214,8 +216,8 @@ class ZontViewModel(
         }
     }
 
-    fun prepareTempSetter() : TempSetter {
-        val appParams : AppParams
+    fun prepareTempSetter(): TempSetter {
+        val appParams: AppParams
 
         runBlocking {
             appParams = dataStoreRepository.getAppParams().first()
@@ -239,13 +241,8 @@ class ZontViewModel(
         )
     }
 
-    fun setTemp(targetTemp: Double) : Boolean {
-        //todo
-        deviceStatusState = DeviceStatusState.InProgress
-        var result = false
-
-        runBlocking {
-
+    fun setTemp(targetTemp: Double) {
+        viewModelScope.launch {
             try {
                 deviceStatus.targetThermostatId?.let { targetThermostatId ->
                     zontRepository.setTemp(
@@ -254,25 +251,21 @@ class ZontViewModel(
                         targetThermostatId,
                         targetTemp
                     )
-                } ?: run {
-                    result = false
-                    return@runBlocking
-                }
-                result = true
+                    showConfirmationActivity(ConfirmationType.SUCCESS, targetTemp)
+                } ?: showConfirmationActivity(ConfirmationType.FAILURE, null)
             } catch (e: IOException) {
-                result = false
+                showConfirmationActivity(ConfirmationType.FAILURE, null)
             } catch (e: HttpException) {
-                result = false
+                showConfirmationActivity(ConfirmationType.FAILURE, null)
             }
         }
-
-        return result
     }
 
     companion object {
         fun provideFactory(
             zontRepository: ZontRepository,
             dataStoreRepository: DataStoreRepository,
+            showConfirmationActivity: (ConfirmationType, Double?) -> Unit,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null
         ): AbstractSavedStateViewModelFactory =
@@ -283,7 +276,11 @@ class ZontViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return ZontViewModel(zontRepository, dataStoreRepository) as T
+                    return ZontViewModel(
+                        zontRepository,
+                        dataStoreRepository,
+                        showConfirmationActivity
+                    ) as T
                 }
             }
     }
