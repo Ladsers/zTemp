@@ -58,8 +58,15 @@ class ZontViewModel(
         _passwordHidden.value = if (newValue.isNotEmpty()) "********" else ""
     }
 
+    private var _skipOnResume = false
+
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
+
+        if (_skipOnResume) {
+            _skipOnResume = false
+            return
+        }
 
         authData = null
         getStatus()
@@ -242,6 +249,10 @@ class ZontViewModel(
     }
 
     fun setTemp(targetTemp: Double) {
+
+        _skipOnResume = true
+        deviceStatusState = DeviceStatusState.InProgress
+
         viewModelScope.launch {
             try {
                 deviceStatus.targetThermostatId?.let { targetThermostatId ->
