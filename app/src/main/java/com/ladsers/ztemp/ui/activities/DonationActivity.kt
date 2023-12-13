@@ -5,54 +5,40 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.launch
 import androidx.wear.activity.ConfirmationActivity
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import com.ladsers.ztemp.data.enums.ResultActivityKey
-import com.ladsers.ztemp.domain.contracts.DonationContract
-import com.ladsers.ztemp.ui.activitycontents.SettingsActivityContent
+import com.ladsers.ztemp.ui.screens.DonationScreen
 import com.ladsers.ztemp.ui.theme.ZTempTheme
 import java.util.concurrent.Executors
 
-class SettingsActivity : ComponentActivity() {
-
-    private lateinit var donationLauncher: ActivityResultLauncher<Unit>
-
+class DonationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        donationLauncher = activityResultRegistry.register(
-            ResultActivityKey.INPUT_KEY.value,
-            this,
-            DonationContract()
-        ) { code -> code?.let { /* todo */ } }
-
-        val updateAvailable = intent.getBooleanExtra("updateAvailable", false)
-        val deviceName = intent.getStringExtra("deviceName") ?: ""
-        val tempStep = intent.getDoubleExtra("tempStep", 1.0)
-
         setContent {
             ZTempTheme {
-                SettingsActivityContent(
-                    updateAvailable,
-                    deviceName,
-                    tempStep,
-                    finishActivity = { finish() },
-                    goToWebsite = { url -> goToWebsite(url) },
-                    startDonationActivity = ::startDonationActivity
+                DonationScreen(
+                    sendResult = { code -> sendResult(code) },
+                    goToWebDonation = ::goToWebDonation
                 )
             }
         }
     }
 
-    private fun goToWebsite(url: String) {
+    private fun sendResult(code: String) {
+        val intent = Intent().putExtra(ResultActivityKey.RESULT_KEY.value, code)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
+    private fun goToWebDonation() {
         val remoteActivityHelper = RemoteActivityHelper(this, Executors.newSingleThreadExecutor())
         remoteActivityHelper.startRemoteActivity(
             Intent(Intent.ACTION_VIEW)
                 .addCategory(Intent.CATEGORY_BROWSABLE)
                 .setData(
-                    Uri.parse(url)
+                    Uri.parse("https://pay.cloudtips.ru/p/9da1c376")
                 ),
             null
         )
@@ -65,6 +51,4 @@ class SettingsActivity : ComponentActivity() {
                 )
         )
     }
-
-    private fun startDonationActivity() = donationLauncher.launch()
 }

@@ -52,6 +52,12 @@
             android:exported="false"
             android:label="@string/title_activity_tempSetter"
             android:theme="@android:style/Theme.DeviceDefault" />
+
+        <activity
+            android:name=".ui.activities.DonationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_donation"
+            android:theme="@android:style/Theme.DeviceDefault" />
     </application>
 
 </manifest>

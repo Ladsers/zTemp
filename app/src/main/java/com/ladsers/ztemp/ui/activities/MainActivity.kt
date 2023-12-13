@@ -8,7 +8,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.wear.activity.ConfirmationActivity
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.enums.ConfirmationType
-import com.ladsers.ztemp.data.enums.TempSetterKey
+import com.ladsers.ztemp.data.enums.ResultActivityKey
 import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.contracts.TempSetterContract
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         tempSetterLauncher = activityResultRegistry.register(
-            TempSetterKey.INPUT_KEY.value,
+            ResultActivityKey.INPUT_KEY.value,
             this,
             TempSetterContract()
         ) { temp -> temp?.let { viewModel.setTemp(it) } }

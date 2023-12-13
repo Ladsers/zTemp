@@ -1,6 +1,6 @@
 package com.ladsers.ztemp.data.enums
 
-enum class TempSetterKey(
+enum class ResultActivityKey(
     val value: String
 ) {
     INPUT_KEY("InputKey"),

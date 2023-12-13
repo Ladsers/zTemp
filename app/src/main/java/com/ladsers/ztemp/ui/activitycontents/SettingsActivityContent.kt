@@ -14,7 +14,8 @@ fun SettingsActivityContent(
     deviceName: String,
     tempStep: Double,
     finishActivity: () -> Unit,
-    goToWebsite: (String) -> Unit
+    goToWebsite: (String) -> Unit,
+    startDonationActivity: () -> Unit
 ) {
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModel.provideFactory(
@@ -24,5 +25,12 @@ fun SettingsActivityContent(
         )
     )
 
-    SettingsScreen(settingsViewModel, updateAvailable, deviceName, finishActivity, goToWebsite)
+    SettingsScreen(
+        settingsViewModel,
+        updateAvailable,
+        deviceName,
+        finishActivity,
+        goToWebsite,
+        startDonationActivity
+    )
 }

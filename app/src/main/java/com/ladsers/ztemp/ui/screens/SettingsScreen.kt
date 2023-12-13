@@ -45,7 +45,8 @@ fun SettingsScreen(
     updateAvailable: Boolean,
     deviceName: String,
     finishActivity: () -> Unit,
-    goToWebsite: (String) -> Unit
+    goToWebsite: (String) -> Unit,
+    startDonationActivity: () -> Unit
 ) {
 
     val listState = rememberScalingLazyListState()
@@ -160,7 +161,16 @@ fun SettingsScreen(
             item {
                 ItemCard(
                     title = stringResource(id = R.string.supportDeveloper),
-                    content = stringResource(id = R.string.supportDeveloperDescription)
+                    content = if (viewModel.addFeatures.value) null
+                    else stringResource(id = R.string.getAdditionalFeatures),
+                    enabled = true,
+                    action = {
+                        if (viewModel.addFeatures.value) {
+                            goToWebsite("https://pay.cloudtips.ru/p/9da1c376")
+                        } else {
+                            startDonationActivity()
+                        }
+                    }
                 )
             }
             item {
