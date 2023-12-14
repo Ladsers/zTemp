@@ -27,6 +27,8 @@ class DonationActivity : ComponentActivity() {
     }
 
     private fun sendResult(code: String) {
+        if (code.isEmpty()) return
+
         val intent = Intent().putExtra(ResultActivityKey.RESULT_KEY.value, code)
         setResult(RESULT_OK, intent)
         finish()

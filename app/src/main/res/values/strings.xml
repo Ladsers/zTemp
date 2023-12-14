@@ -41,6 +41,10 @@
     <string name="licenseThirdParty">Лицензия, сторонние ресурсы</string>
     <string name="version">Версия</string>
     <string name="logOut">Выйти из аккаунта</string>
+    <string name="codeAccepted">Код принят</string>
+    <string name="incorrectCode">Неверный код</string>
+    <string name="setValueSuccess">Значение установлено</string>
+    <string name="setValueFailure">Не удалось установить значение</string>
 
     <!-- Common -->
     <string name="enter">Ввод</string>

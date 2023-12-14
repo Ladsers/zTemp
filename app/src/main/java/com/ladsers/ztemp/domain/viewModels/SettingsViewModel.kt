@@ -9,17 +9,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
+import com.ladsers.ztemp.R
+import com.ladsers.ztemp.data.enums.ConfirmationType
 import com.ladsers.ztemp.data.models.AppParams
 import com.ladsers.ztemp.data.models.AuthData
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.security.MessageDigest
 import kotlin.math.round
 
 class SettingsViewModel(
     private val dataStoreRepository: DataStoreRepository,
-    private val tempStep: Double
+    private val tempStep: Double,
+    private val showConfirmationActivity: (ConfirmationType, Int) -> Unit
 ) : ViewModel() {
 
     private lateinit var _appParams: AppParams
@@ -30,13 +34,20 @@ class SettingsViewModel(
     private val _presetTemp1: MutableState<String> = mutableStateOf(value = "")
     val presetTemp1: State<String> = _presetTemp1
     fun updatePresetTemp1(newValue: String) {
-        val newTemp = prepareTemp(newValue) ?: return
-        if (_appParams.presetTemp1 == newTemp) return
+        val newTemp = prepareTemp(newValue) ?: run {
+            showConfirmationActivity(ConfirmationType.FAILURE, R.string.setValueFailure)
+            return
+        }
+        if (_appParams.presetTemp1 == newTemp) {
+            showConfirmationActivity(ConfirmationType.SUCCESS, R.string.setValueSuccess)
+            return
+        }
 
         _presetTemp1.value = "${newTemp}°C"
         _appParams.presetTemp1 = newTemp
         viewModelScope.launch {
             dataStoreRepository.saveAppParams(_appParams)
+            showConfirmationActivity(ConfirmationType.SUCCESS, R.string.setValueSuccess)
         }
     }
 
@@ -44,13 +55,20 @@ class SettingsViewModel(
     val presetTemp2: State<String> = _presetTemp2
     fun updatePresetTemp2(newValue: String) {
 
-        val newTemp = prepareTemp(newValue) ?: return // todo error?
-        if (_appParams.presetTemp2 == newTemp) return
+        val newTemp = prepareTemp(newValue) ?: run {
+            showConfirmationActivity(ConfirmationType.FAILURE, R.string.setValueFailure)
+            return
+        }
+        if (_appParams.presetTemp2 == newTemp) {
+            showConfirmationActivity(ConfirmationType.SUCCESS, R.string.setValueSuccess)
+            return
+        }
 
         _presetTemp2.value = "${newTemp}°C"
         _appParams.presetTemp2 = newTemp
         viewModelScope.launch {
             dataStoreRepository.saveAppParams(_appParams)
+            showConfirmationActivity(ConfirmationType.SUCCESS, R.string.setValueSuccess)
         }
     }
 
@@ -71,6 +89,22 @@ class SettingsViewModel(
             val authData = AuthData(token = "", deviceId = 0)
             dataStoreRepository.saveAuthData(authData)
         }
+    }
+
+    fun checkCode(code: String) {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(code.toByteArray())
+        val hash =
+            digest.fold(StringBuilder()) { sb, it -> sb.append("%02x".format(it)) }.toString()
+
+        if (hash == "cf5dc9d09f9e67c4e01a3dd3085dbae01fef8b77bd80418bb08a521f32749f87") {
+            _appParams.addFeatures = true
+            viewModelScope.launch {
+                dataStoreRepository.saveAppParams(_appParams)
+                _addFeatures.value = true
+                showConfirmationActivity(ConfirmationType.SUCCESS, R.string.codeAccepted)
+            }
+        } else showConfirmationActivity(ConfirmationType.FAILURE, R.string.incorrectCode)
     }
 
     private fun loadAppParams() {
@@ -106,6 +140,7 @@ class SettingsViewModel(
         fun provideFactory(
             dataStoreRepository: DataStoreRepository,
             tempStep: Double,
+            showConfirmationActivity: (ConfirmationType, Int) -> Unit,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null
         ): AbstractSavedStateViewModelFactory =
@@ -116,7 +151,11 @@ class SettingsViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return SettingsViewModel(dataStoreRepository, tempStep) as T
+                    return SettingsViewModel(
+                        dataStoreRepository,
+                        tempStep,
+                        showConfirmationActivity
+                    ) as T
                 }
             }
     }

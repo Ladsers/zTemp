@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.wear.activity.ConfirmationActivity
+import androidx.wear.widget.ConfirmationOverlay
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.enums.ConfirmationType
 import com.ladsers.ztemp.data.enums.ResultActivityKey
@@ -87,6 +88,11 @@ class MainActivity : ComponentActivity() {
                     ConfirmationActivity.EXTRA_ANIMATION_TYPE,
                     if (confirmationType == ConfirmationType.SUCCESS) ConfirmationActivity.SUCCESS_ANIMATION
                     else ConfirmationActivity.FAILURE_ANIMATION
+                )
+                .putExtra(
+                    ConfirmationActivity.EXTRA_ANIMATION_DURATION_MILLIS,
+                    if (confirmationType == ConfirmationType.SUCCESS) ConfirmationOverlay.DEFAULT_ANIMATION_DURATION_MS
+                    else 1700
                 )
                 .putExtra(
                     ConfirmationActivity.EXTRA_MESSAGE,
