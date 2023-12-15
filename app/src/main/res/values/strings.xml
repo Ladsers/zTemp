@@ -10,6 +10,8 @@
     <string name="cd_decreaseTemp">Уменьшить температуру</string>
     <string name="cd_increaseTemp">Увеличить температуру</string>
     <string name="cd_confirm">Подтвердить</string>
+    <string name="cd_yes">Да</string>
+    <string name="cd_no">Нет</string>
 
     <!-- Titles -->
     <string name="title_activity_settings">Настройки</string>
@@ -17,6 +19,7 @@
     <string name="title_activity_donation">Поддержать разработчика</string>
     <string name="title_signInZont">Вход в ZONT</string>
     <string name="title_availableDevices">Доступные устройства</string>
+    <string name="title_logOutDialog">Выйти из аккаунта</string>
 
     <!-- Errors -->
     <string name="err_noInternetConnection">Нет подключения\nк интернету</string>
@@ -56,5 +59,6 @@
     <string name="setTempSuccess">Установлено %1$,.1f°C</string>
     <string name="setTempFailure">Сбой установки температуры</string>
     <string name="code">Код</string>
+    <string name="areYouSure">Вы уверены?</string>
 
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.wear.compose.material.*
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.DeviceStatus
 import com.ladsers.ztemp.data.models.TempSetter
+import com.ladsers.ztemp.ui.theme.Orange
 import com.ladsers.ztemp.ui.theme.wearColorPalette
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,6 +26,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun StatusScreen(
     deviceStatus: DeviceStatus?,
+    updateAvailable: State<Boolean>,
     onSettingsBtnClicked: (Boolean, String, Double) -> Unit,
     prepareTempSetter: () -> TempSetter,
     startTempSetterActivity: (TempSetter) -> Unit,
@@ -171,7 +174,7 @@ fun StatusScreen(
                     onClick = {
                         deviceStatus?.let {
                             onSettingsBtnClicked(
-                                true, // todo update system
+                                updateAvailable.value,
                                 it.name,
                                 it.tempStep
                             )
@@ -183,7 +186,8 @@ fun StatusScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
-                        contentDescription = stringResource(id = R.string.cd_settings)
+                        contentDescription = stringResource(id = R.string.cd_settings),
+                        tint = if (updateAvailable.value) Orange else Color.White
                     )
                 }
             }

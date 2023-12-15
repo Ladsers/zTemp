@@ -89,7 +89,7 @@ fun TempSetterScreen(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Done,
-                    contentDescription = stringResource(id = R.string.cd_settings)
+                    contentDescription = stringResource(id = R.string.cd_confirm)
                 )
             }
             Button(

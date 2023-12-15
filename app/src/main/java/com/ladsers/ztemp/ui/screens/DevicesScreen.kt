@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,6 +34,7 @@ import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.data.models.DeviceStatus
 import com.ladsers.ztemp.ui.components.ItemCard
+import com.ladsers.ztemp.ui.components.LogOutDialog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -42,6 +44,7 @@ fun DevicesScreen(
     onDeviceSelected: (Int) -> Unit,
     onLogOutClicked: () -> Unit
 ) {
+    val logOutDialogState = remember { mutableStateOf(false) }
     val listState = rememberScalingLazyListState()
 
     Scaffold(
@@ -85,7 +88,9 @@ fun DevicesScreen(
                     action = { onDeviceSelected(device.id) })
             }
             item {
-                Button(modifier = Modifier.padding(top = 30.dp), onClick = onLogOutClicked) {
+                Button(
+                    modifier = Modifier.padding(top = 30.dp),
+                    onClick = { logOutDialogState.value = true }) {
                     Icon(
                         imageVector = Icons.Rounded.Logout,
                         contentDescription = stringResource(id = R.string.cd_logOut)
@@ -97,4 +102,6 @@ fun DevicesScreen(
             focusRequester.requestFocus()
         }
     }
+
+    LogOutDialog(dialogState = logOutDialogState) { onLogOutClicked() }
 }

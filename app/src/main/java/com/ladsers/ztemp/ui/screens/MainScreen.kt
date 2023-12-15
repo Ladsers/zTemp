@@ -20,11 +20,12 @@ fun MainScreen(
         is DeviceStatusState.NoDeviceSelected -> DevicesScreen(
             deviceStatusState.devices,
             deviceStatusState.onDeviceSelected,
-            deviceStatusState.onLogOutClicked
+            deviceStatusState.onLogOutClicked // todo in deviceStatusState?
         )
 
         is DeviceStatusState.GettingStatus -> StatusScreen(
             deviceStatus = null,
+            updateAvailable = viewModel.updateAvailable,
             onSettingsBtnClicked = onSettingsBtnClicked,
             prepareTempSetter = viewModel::prepareTempSetter,
             startTempSetterActivity = onTempSetterBtnClicked
@@ -32,6 +33,7 @@ fun MainScreen(
 
         is DeviceStatusState.Success -> StatusScreen(
             deviceStatus = deviceStatusState.deviceStatus,
+            updateAvailable = viewModel.updateAvailable,
             onRefreshAction = { viewModel.getStatus(refreshing = true) },
             onSettingsBtnClicked = onSettingsBtnClicked,
             prepareTempSetter = viewModel::prepareTempSetter,

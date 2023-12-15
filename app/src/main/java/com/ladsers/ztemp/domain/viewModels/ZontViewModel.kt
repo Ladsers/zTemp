@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
+import com.ladsers.web.update.Channel
+import com.ladsers.web.update.Platform
+import com.ladsers.web.update.Updater
+import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.data.enums.ConfirmationType
 import com.ladsers.ztemp.data.enums.StatusError
 import com.ladsers.ztemp.data.models.AppParams
@@ -14,6 +18,7 @@ import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.states.UserInfoState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -29,6 +34,11 @@ class ZontViewModel(
 
     private lateinit var deviceStatus: DeviceStatus
     private var authData: AuthData? = null
+
+    private var _updateChecked = false
+
+    private val _updateAvailable: MutableState<Boolean> = mutableStateOf(value = false)
+    val updateAvailable: State<Boolean> = _updateAvailable
 
     var userInfoState: UserInfoState by mutableStateOf(UserInfoState.InProcessing)
         private set
@@ -120,6 +130,19 @@ class ZontViewModel(
                         error = StatusError.SERVER_ERROR,
                         fixAction = ::getStatus
                     )
+                }
+            }
+
+            if (!_updateChecked) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    Updater.getNewVersionTag(
+                        "ztemp",
+                        Platform.WEAROS,
+                        BuildConfig.VERSION_NAME,
+                        Channel.STABLE
+                    )?.run {
+                        _updateAvailable.value = true
+                    }
                 }
             }
         }

@@ -3,8 +3,12 @@ package com.ladsers.ztemp.ui.screens
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -15,7 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CardDefaults
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
@@ -27,11 +34,13 @@ import androidx.wear.compose.material.TimeTextDefaults
 import androidx.wear.compose.material.TitleCard
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
+import androidx.wear.compose.material.dialog.Alert
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.R
 import com.ladsers.ztemp.domain.viewModels.SettingsViewModel
 import com.ladsers.ztemp.ui.components.ItemCard
+import com.ladsers.ztemp.ui.components.LogOutDialog
 import com.ladsers.ztemp.ui.components.TextInputCard
 import com.ladsers.ztemp.ui.theme.AlmostBlack
 import com.ladsers.ztemp.ui.theme.DarkOrange
@@ -48,7 +57,7 @@ fun SettingsScreen(
     goToWebsite: (String) -> Unit,
     startDonationActivity: () -> Unit
 ) {
-
+    val logOutDialogState = remember { mutableStateOf(false) }
     val listState = rememberScalingLazyListState()
 
     Scaffold(
@@ -194,13 +203,17 @@ fun SettingsScreen(
                 )
             }
             item {
-                ItemCard(title = stringResource(id = R.string.logOut))
+                ItemCard(title = stringResource(id = R.string.logOut),
+                    enabled = true,
+                    action = { logOutDialogState.value = true })
             }
         }
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
     }
+    
+    LogOutDialog(dialogState = logOutDialogState) { viewModel.logOut() }
 }
 
 @Composable
