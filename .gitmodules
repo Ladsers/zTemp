@@ -1,0 +1,3 @@
+[submodule "app/ladsers-web"]
+	path = app/ladsers-web
+	url = https://github.com/Ladsers/ladsers-web.git
