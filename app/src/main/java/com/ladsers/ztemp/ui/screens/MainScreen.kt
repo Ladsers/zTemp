@@ -18,9 +18,9 @@ fun MainScreen(
         is DeviceStatusState.NotSignedIn -> SignInScreen(viewModel)
 
         is DeviceStatusState.NoDeviceSelected -> DevicesScreen(
-            deviceStatusState.devices,
-            deviceStatusState.onDeviceSelected,
-            deviceStatusState.onLogOutClicked // todo in deviceStatusState?
+            devices = deviceStatusState.devices,
+            onDeviceSelected = viewModel::selectDevice,
+            onLogOutClicked = viewModel::logOut
         )
 
         is DeviceStatusState.GettingStatus -> StatusScreen(
@@ -41,10 +41,10 @@ fun MainScreen(
         )
 
         is DeviceStatusState.Error -> ErrorScreen(
-            deviceStatusState.error.icon,
-            deviceStatusState.error.messageRes,
-            deviceStatusState.error.btnTextRes,
-            deviceStatusState.fixAction
+            icon = deviceStatusState.error.icon,
+            messageRes = deviceStatusState.error.messageRes,
+            btnTextRes = deviceStatusState.error.btnTextRes,
+            fixAction = deviceStatusState.fixAction
         )
     }
 }

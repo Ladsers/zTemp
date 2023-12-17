@@ -8,11 +8,7 @@ interface DeviceStatusState {
 
     object NotSignedIn : DeviceStatusState
 
-    data class NoDeviceSelected(
-        val devices: List<DeviceStatus>,
-        val onDeviceSelected: (Int) -> Unit,
-        val onLogOutClicked: () -> Unit
-    ) : DeviceStatusState
+    data class NoDeviceSelected(val devices: List<DeviceStatus>) : DeviceStatusState
 
     object GettingStatus : DeviceStatusState
 

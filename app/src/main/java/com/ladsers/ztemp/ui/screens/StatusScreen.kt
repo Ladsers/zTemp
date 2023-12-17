@@ -170,7 +170,7 @@ fun StatusScreen(
                     },
                     colors = ButtonDefaults.secondaryButtonColors(),
                     modifier = Modifier.padding(start = 8.dp),
-                    enabled = deviceStatus?.online == true // todo ?
+                    enabled = deviceStatus != null
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,

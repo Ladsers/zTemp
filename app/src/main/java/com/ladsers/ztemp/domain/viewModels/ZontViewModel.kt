@@ -17,7 +17,6 @@ import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import com.ladsers.ztemp.domain.states.DeviceStatusState
-import com.ladsers.ztemp.domain.states.UserInfoState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -40,19 +39,8 @@ class ZontViewModel(
     private val _updateAvailable: MutableState<Boolean> = mutableStateOf(value = false)
     val updateAvailable: State<Boolean> = _updateAvailable
 
-    var userInfoState: UserInfoState by mutableStateOf(UserInfoState.InProcessing)
-        private set
-
     var deviceStatusState: DeviceStatusState by mutableStateOf(DeviceStatusState.InProgress)
         private set
-
-    private val _targetTempState: MutableState<Double> = mutableStateOf(value = 0.0)
-    val targetTempState: State<Double> = _targetTempState
-
-    //todo
-    fun updateTargetTempState(newValue: Double) {
-        _targetTempState.value = newValue
-    }
 
     private val _username: MutableState<String> = mutableStateOf(value = "")
     val username: State<String> = _username
@@ -144,6 +132,7 @@ class ZontViewModel(
                         _updateAvailable.value = true
                     }
                 }
+                _updateChecked = true
             }
         }
     }
@@ -190,11 +179,7 @@ class ZontViewModel(
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
             deviceStatusState = try {
-                DeviceStatusState.NoDeviceSelected(
-                    devices = zontRepository.getDevices(authData!!.token),
-                    onDeviceSelected = ::selectDevice,
-                    onLogOutClicked = ::logOut
-                )
+                DeviceStatusState.NoDeviceSelected(devices = zontRepository.getDevices(authData!!.token))
             } catch (e: IOException) {
                 DeviceStatusState.Error(
                     error = StatusError.NO_INTERNET_CONNECTION,
@@ -216,7 +201,7 @@ class ZontViewModel(
         }
     }
 
-    private fun selectDevice(deviceId: Int) {
+    fun selectDevice(deviceId: Int) {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
             authData?.let { d ->
@@ -237,7 +222,7 @@ class ZontViewModel(
         }
     }
 
-    private fun logOut() {
+    fun logOut() {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
             authData = AuthData(token = "", deviceId = 0)
