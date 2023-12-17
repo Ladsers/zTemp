@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                     if (confirmationType == ConfirmationType.SUCCESS) getString(
                         R.string.setTempSuccess,
                         setTemp
-                    )
+                    ).replace(',', '.')
                     else getString(R.string.setTempFailure)
                 )
         )

@@ -20,8 +20,6 @@ import com.ladsers.ztemp.data.models.DeviceStatus
 import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.ui.theme.Orange
 import com.ladsers.ztemp.ui.theme.wearColorPalette
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun StatusScreen(
@@ -43,6 +41,7 @@ fun StatusScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(87.dp)
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }) { onRefreshAction() },
@@ -118,25 +117,14 @@ fun StatusScreen(
             }
 
             if (deviceStatus != null) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Refresh,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(16.dp)
-                            .padding(top = 2.dp),
-                        tint = Color.Gray
-                    )
-                    Text(
-                        text = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
-                        color = Color.Gray,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 2.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(20.dp)
+                        .padding(top = 2.dp),
+                    tint = Color.Gray
+                )
             } else {
                 CircularProgressIndicator(
                     modifier = Modifier.width(16.dp),
