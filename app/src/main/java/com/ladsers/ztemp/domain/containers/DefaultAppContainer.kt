@@ -4,6 +4,7 @@ import android.content.Context
 import com.ladsers.ztemp.data.apiservices.ZontService
 import com.ladsers.ztemp.data.repositories.DataStoreRepository
 import com.ladsers.ztemp.data.repositories.AppDataStoreRepository
+import com.ladsers.ztemp.data.repositories.DemoZontRepository
 import com.ladsers.ztemp.data.repositories.NetworkZontRepository
 import com.ladsers.ztemp.data.repositories.ZontRepository
 import retrofit2.Retrofit
@@ -23,6 +24,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val zontRepository: ZontRepository by lazy {
         NetworkZontRepository(retrofitService)
+        //DemoZontRepository() // use for demonstration and debugging
     }
 
     override val dataStoreRepository: DataStoreRepository by lazy {
