@@ -4,6 +4,9 @@ import com.ladsers.ztemp.data.models.AppParams
 import com.ladsers.ztemp.data.models.AuthData
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Interactions with the internal watch storage.
+ */
 interface DataStoreRepository {
     suspend fun saveAuthData(authData: AuthData)
     fun getAuthData(): Flow<AuthData>

@@ -9,6 +9,9 @@ import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ladsers.ztemp.R
 
+/**
+ * Enumeration of possible errors during application operation.
+ */
 enum class StatusError(
     val icon: ImageVector,
     @StringRes val messageRes: Int,
@@ -34,6 +37,6 @@ enum class StatusError(
     DEVICE_NOT_FOUND(
         icon = Icons.Rounded.SearchOff,
         messageRes = R.string.err_deviceNotFound,
-        btnTextRes = R.string.choose
+        btnTextRes = R.string.select
     )
 }

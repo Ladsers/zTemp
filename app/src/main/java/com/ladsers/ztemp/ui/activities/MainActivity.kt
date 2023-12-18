@@ -13,7 +13,7 @@ import com.ladsers.ztemp.data.enums.ResultActivityKey
 import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.contracts.TempSetterContract
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
-import com.ladsers.ztemp.ui.activitycontents.MainActivityContent
+import com.ladsers.ztemp.ui.activitycontents.mainActivityContent
 import com.ladsers.ztemp.ui.theme.ZTempTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,30 +28,24 @@ class MainActivity : ComponentActivity() {
             ResultActivityKey.INPUT_KEY.value,
             this,
             TempSetterContract()
-        ) { temp -> temp?.let { viewModel.setTemp(it) } }
+        ) { temp -> temp?.let { viewModel.setTemp(it) } } // action after RESULT_OK
 
         setContent {
             ZTempTheme {
-                viewModel = MainActivityContent(
-                    startTempSetterActivity = fun(tempSetter: TempSetter) {
-                        startTempSetterActivity(tempSetter)
-                    },
-                    startSettingsActivity = fun(
-                        updateAvailable: Boolean,
-                        deviceName: String,
-                        tempStep: Double
-                    ) {
+                viewModel = mainActivityContent(
+                    startTempSetterActivity = { tempSetter -> startTempSetterActivity(tempSetter) },
+                    startSettingsActivity = { updateAvailable, deviceName, tempStep ->
                         startSettingsActivity(
                             updateAvailable,
                             deviceName,
                             tempStep
                         )
                     },
-                    showConfirmationActivity = fun(
-                        confirmationType: ConfirmationType,
-                        setTemp: Double?
-                    ) {
-                        showConfirmationActivity(confirmationType, setTemp)
+                    showConfirmationActivity = { confirmationType, setTemp ->
+                        showConfirmationActivity(
+                            confirmationType,
+                            setTemp
+                        )
                     })
 
                 lifecycle.addObserver(viewModel)

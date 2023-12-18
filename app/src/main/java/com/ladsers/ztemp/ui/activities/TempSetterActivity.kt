@@ -24,7 +24,7 @@ class TempSetterActivity : ComponentActivity() {
         tempSetter?.let {
             setContent {
                 ZTempTheme {
-                    TempSetterScreen(it, sendResult = fun(setTemp: Double) { sendResult(setTemp) })
+                    TempSetterScreen(tempSetter = it) { setTemp -> sendResult(setTemp) }
                 }
             }
         } ?: finish()

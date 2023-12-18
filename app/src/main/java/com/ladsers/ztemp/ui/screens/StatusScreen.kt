@@ -21,6 +21,9 @@ import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.ui.theme.Orange
 import com.ladsers.ztemp.ui.theme.wearColorPalette
 
+/**
+ * First screen of the application.
+ */
 @Composable
 fun StatusScreen(
     deviceStatus: DeviceStatus?,

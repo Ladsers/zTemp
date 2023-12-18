@@ -53,6 +53,7 @@ fun ErrorScreen(
         Button(
             onClick = fixAction,
             modifier = btnTextRes?.run { Modifier.height(30.dp) } ?: Modifier) {
+            // Text button or Icon button
             btnTextRes?.let {
                 Text(
                     text = stringResource(id = it),

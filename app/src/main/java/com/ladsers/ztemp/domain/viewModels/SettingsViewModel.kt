@@ -104,7 +104,7 @@ class SettingsViewModel(
                 _addFeatures.value = true
                 showConfirmationActivity(ConfirmationType.SUCCESS, R.string.codeAccepted)
             }
-        } else showConfirmationActivity(ConfirmationType.FAILURE, R.string.incorrectCode)
+        } else showConfirmationActivity(ConfirmationType.FAILURE, R.string.invalidCode)
     }
 
     private fun loadAppParams() {
@@ -121,18 +121,18 @@ class SettingsViewModel(
         val tempValue = tempStr.replace(',', '.').toDoubleOrNull() ?: return null
 
         if (tempValue <= 5.0) {
-            return 5.0
+            return 5.0 // min temp in ZONT
         }
 
         if (tempValue >= 35.0) {
-            return 35.0
+            return 35.0 // max temp in ZONT
         }
 
         val multiplier = 10000
         return if ((tempValue * multiplier).toInt() % (tempStep * multiplier).toInt() == 0) {
             tempValue
         } else {
-            round(tempValue)
+            round(tempValue) // Not a multiple of the temp step
         }
     }
 

@@ -31,9 +31,10 @@ class ZontViewModel(
     private val showConfirmationActivity: (ConfirmationType, Double?) -> Unit
 ) : ViewModel(), DefaultLifecycleObserver {
 
-    private lateinit var deviceStatus: DeviceStatus
-    private var authData: AuthData? = null
+    private lateinit var _deviceStatus: DeviceStatus
+    private var _authData: AuthData? = null
 
+    // Flag to check for updates once
     private var _updateChecked = false
 
     private val _updateAvailable: MutableState<Boolean> = mutableStateOf(value = false)
@@ -48,7 +49,7 @@ class ZontViewModel(
         _username.value = newValue
     }
 
-    private var _password = ""
+    private var _password = "" // real password
     private val _passwordHidden: MutableState<String> = mutableStateOf(value = "")
     val passwordHidden: State<String> = _passwordHidden
     fun updatePassword(newValue: String) {
@@ -56,6 +57,7 @@ class ZontViewModel(
         _passwordHidden.value = if (newValue.isNotEmpty()) "********" else ""
     }
 
+    // Flag to skip getting status when activity resumes
     private var _skipOnResume = false
 
     override fun onResume(owner: LifecycleOwner) {
@@ -66,7 +68,7 @@ class ZontViewModel(
             return
         }
 
-        authData = null
+        _authData = null
         getStatus()
     }
 
@@ -75,32 +77,35 @@ class ZontViewModel(
 
             if (!refreshing) {
                 deviceStatusState = DeviceStatusState.InProgress
-                authData = authData ?: dataStoreRepository.getAuthData().first()
+                _authData = _authData ?: dataStoreRepository.getAuthData().first()
 
-                if (authData?.token.isNullOrEmpty()) {
+                /* Sign in */
+                if (_authData?.token.isNullOrEmpty()) {
                     deviceStatusState = DeviceStatusState.NotSignedIn
                     return@launch
                 }
 
-                if (authData!!.deviceId == 0) {
+                /* Select device */
+                if (_authData!!.deviceId == 0) {
                     getDevices()
                     return@launch
                 }
             }
 
+            /* Main purpose of the function */
             deviceStatusState = DeviceStatusState.GettingStatus
 
             try {
-                deviceStatus = zontRepository.getDeviceStatus(
-                    authData!!.token,
-                    authData!!.deviceId
+                _deviceStatus = zontRepository.getDeviceStatus(
+                    _authData!!.token,
+                    _authData!!.deviceId
                 )
 
                 deviceStatusState =
-                    if (deviceStatus.id != 0) DeviceStatusState.Success(deviceStatus)
+                    if (_deviceStatus.id != 0) DeviceStatusState.Success(_deviceStatus)
                     else DeviceStatusState.Error(
                         error = StatusError.DEVICE_NOT_FOUND,
-                        fixAction = ::resetDevice
+                        fixAction = ::forgetDevice
                     )
             } catch (e: IOException) {
                 deviceStatusState = DeviceStatusState.Error(
@@ -121,6 +126,7 @@ class ZontViewModel(
                 }
             }
 
+            /* Check update */
             if (!_updateChecked) {
                 viewModelScope.launch(Dispatchers.IO) {
                     Updater.getNewVersionTag(
@@ -146,13 +152,13 @@ class ZontViewModel(
                 val userInfo = zontRepository.getUserInfo(username.value, _password)
 
                 userInfo.token?.let { t ->
-                    authData?.let { d ->
+                    _authData?.let { d ->
                         d.token = t
                         dataStoreRepository.saveAuthData(d)
                     }
                 }
 
-                getStatus()
+                getStatus() // back to the main flow
 
             } catch (e: IOException) {
                 deviceStatusState = DeviceStatusState.Error(
@@ -175,11 +181,11 @@ class ZontViewModel(
         }
     }
 
-    fun getDevices() {
+    private fun getDevices() {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
             deviceStatusState = try {
-                DeviceStatusState.NoDeviceSelected(devices = zontRepository.getDevices(authData!!.token))
+                DeviceStatusState.NoDeviceSelected(devices = zontRepository.getDevices(_authData!!.token))
             } catch (e: IOException) {
                 DeviceStatusState.Error(
                     error = StatusError.NO_INTERNET_CONNECTION,
@@ -201,23 +207,29 @@ class ZontViewModel(
         }
     }
 
+    /**
+     * Actions after selecting a device.
+     */
     fun selectDevice(deviceId: Int) {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
-            authData?.let { d ->
+            _authData?.let { d ->
                 d.deviceId = deviceId
                 dataStoreRepository.saveAuthData(d)
             }
-            getStatus()
+            getStatus() // back to the main flow
         }
     }
 
-    private fun resetDevice() {
+    /**
+     * Delete the selected device ID from memory.
+     */
+    private fun forgetDevice() {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
-            authData = dataStoreRepository.getAuthData().first()
-            authData!!.deviceId = 0
-            dataStoreRepository.saveAuthData(authData!!)
+            _authData = dataStoreRepository.getAuthData().first()
+            _authData!!.deviceId = 0
+            dataStoreRepository.saveAuthData(_authData!!)
             getStatus()
         }
     }
@@ -225,12 +237,15 @@ class ZontViewModel(
     fun logOut() {
         viewModelScope.launch {
             deviceStatusState = DeviceStatusState.InProgress
-            authData = AuthData(token = "", deviceId = 0)
-            dataStoreRepository.saveAuthData(authData!!)
+            _authData = AuthData(token = "", deviceId = 0)
+            dataStoreRepository.saveAuthData(_authData!!)
             getStatus()
         }
     }
 
+    /**
+     * Prepare data model for the temp setter (for TempSetterActivity).
+     */
     fun prepareTempSetter(): TempSetter {
         val appParams: AppParams
 
@@ -243,13 +258,13 @@ class ZontViewModel(
             return if ((tempValue * multiplier).toInt() % (tempValue * multiplier).toInt() == 0) {
                 tempValue
             } else {
-                round(tempValue)
+                round(tempValue) // Not a multiple of the temp step
             }
         }
 
         return TempSetter(
-            targetTemp = deviceStatus.targetTemp!!,
-            tempStep = deviceStatus.tempStep,
+            targetTemp = _deviceStatus.targetTemp!!,
+            tempStep = _deviceStatus.tempStep,
             presetTemp1 = prepareTemp(appParams.presetTemp1),
             presetTemp2 = prepareTemp(appParams.presetTemp2),
             addFeatures = appParams.addFeatures
@@ -258,15 +273,15 @@ class ZontViewModel(
 
     fun setTemp(targetTemp: Double) {
 
-        _skipOnResume = true
+        _skipOnResume = true // Remove double request
         deviceStatusState = DeviceStatusState.InProgress
 
         viewModelScope.launch {
             try {
-                deviceStatus.targetThermostatId?.let { targetThermostatId ->
+                _deviceStatus.targetThermostatId?.let { targetThermostatId ->
                     zontRepository.setTemp(
-                        authData!!.token,
-                        authData!!.deviceId,
+                        _authData!!.token,
+                        _authData!!.deviceId,
                         targetThermostatId,
                         targetTemp
                     )

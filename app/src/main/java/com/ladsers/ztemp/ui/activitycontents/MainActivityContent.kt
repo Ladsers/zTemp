@@ -17,7 +17,7 @@ import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 import com.ladsers.ztemp.ui.screens.MainScreen
 
 @Composable
-fun MainActivityContent(
+fun mainActivityContent(
     startTempSetterActivity: (TempSetter) -> Unit,
     startSettingsActivity: (Boolean, String, Double) -> Unit,
     showConfirmationActivity: (ConfirmationType, Double?) -> Unit
@@ -35,9 +35,7 @@ fun MainActivityContent(
         modifier = Modifier.fillMaxWidth(),
         timeText = {
             TimeText(
-                timeTextStyle = TimeTextDefaults.timeTextStyle(
-                    fontSize = 12.sp
-                )
+                timeTextStyle = TimeTextDefaults.timeTextStyle(fontSize = 12.sp)
             )
         }
     ) {

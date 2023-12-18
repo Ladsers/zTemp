@@ -6,6 +6,10 @@ import com.ladsers.ztemp.data.models.zont.DevicesResponse
 import com.ladsers.ztemp.data.models.zont.ThermostatTargetRequest
 import retrofit2.http.*
 
+/**
+ * ZONT API
+ * https://zont-online.ru/api/docs/
+ */
 interface ZontService {
 
     @Headers(

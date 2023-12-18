@@ -24,7 +24,7 @@ fun InProgressScreen() {
         CircularProgressIndicator(
             modifier = Modifier.width(40.dp).height(40.dp),
             indicatorColor = wearColorPalette.primary,
-            trackColor = Color.Black,
+            trackColor = Color.Black
         )
     }
 }

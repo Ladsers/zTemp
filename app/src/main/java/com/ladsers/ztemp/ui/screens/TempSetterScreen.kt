@@ -40,11 +40,11 @@ fun TempSetterScreen(
         object : MutableState<Double> by state {
             override var value: Double
                 get() = state.value
-                set(value) {
+                set(value) { // Apply restrictions
                     if (value <= 5.0) {
-                        state.value = 5.0
+                        state.value = 5.0 // min temp in ZONT
                     } else if (value >= 35.0) {
-                        state.value = 35.0
+                        state.value = 35.0 // max temp in ZONT
                     } else {
                         state.value = value
                     }
@@ -60,7 +60,7 @@ fun TempSetterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "  ${targetTemp.value}°C",
+            text = "  ${targetTemp.value}°C", // spaces for symmetry
             color = wearColorPalette.secondary,
             fontSize = 23.sp,
             modifier = Modifier.padding(bottom = 15.dp)
@@ -121,7 +121,7 @@ fun TempSetterScreen(
                     .height(37.dp)
             ) {
                 Text(text = tempSetter.presetTemp1.toString().trimEnd { it == '0' }
-                    .trimEnd { it == '.' })
+                    .trimEnd { it == '.' }) // lazy removal of extra zeros
             }
             Button(
                 onClick = { targetTemp.value = tempSetter.presetTemp2 },

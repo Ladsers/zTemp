@@ -13,12 +13,15 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.dialog.Alert
 import com.ladsers.ztemp.R
 
+/**
+ * Dialog to confirm logging out.
+ */
 @Composable
 fun LogOutDialog(
     dialogState: MutableState<Boolean>,
     positiveAction: () -> Unit
 ) {
-    if (!dialogState.value) return
+    if (!dialogState.value) return // Dialog is currently hidden.
 
     Alert(
         title = { Text(text = stringResource(id = R.string.title_logOutDialog)) },
@@ -26,8 +29,8 @@ fun LogOutDialog(
         positiveButton = {
             Button(
                 onClick = {
-                    positiveAction()
-                    dialogState.value = false
+                    positiveAction() // Do action
+                    dialogState.value = false // Hide dialog
                 },
                 colors = ButtonDefaults.primaryButtonColors()
             ) {
@@ -39,7 +42,7 @@ fun LogOutDialog(
         },
         negativeButton = {
             Button(
-                onClick = { dialogState.value = false },
+                onClick = { dialogState.value = false }, // Just hide dialog
                 colors = ButtonDefaults.secondaryButtonColors()
             ) {
                 Icon(

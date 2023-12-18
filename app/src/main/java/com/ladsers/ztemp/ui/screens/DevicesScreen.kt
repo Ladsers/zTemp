@@ -85,7 +85,7 @@ fun DevicesScreen(
                 ItemCard(
                     title = device.name,
                     enabled = true,
-                    action = { onDeviceSelected(device.id) })
+                    onClickAction = { onDeviceSelected(device.id) })
             }
             item {
                 Button(

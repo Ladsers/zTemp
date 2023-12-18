@@ -38,14 +38,14 @@
     <string name="supportDeveloperDescription">Если приложение оказалось для вас полезным, пожалуйста, поддержите меня и пожертвуйте небольшую сумму – это поможет мне и дальше разрабатывать отличные приложения.\n\n
 В награду за поддержку вы получите доступ к дополнительным функциям. После оплаты будет показан код, который необходимо сохранить и ввести в соответствующее поле ниже.
 </string>
-    <string name="openCloudTips">Перейти на сайт пожертвований</string>
+    <string name="goToDonation">Перейти на сайт пожертвований</string>
     <string name="appWebsite">Сайт приложения</string>
     <string name="createdBy">Разработал Максим Королев</string>
     <string name="licenseThirdParty">Лицензия, сторонние ресурсы</string>
     <string name="version">Версия</string>
     <string name="logOut">Выйти из аккаунта</string>
     <string name="codeAccepted">Код принят</string>
-    <string name="incorrectCode">Неверный код</string>
+    <string name="invalidCode">Неверный код</string>
     <string name="setValueSuccess">Значение установлено</string>
     <string name="setValueFailure">Не удалось установить значение</string>
 
@@ -54,7 +54,7 @@
     <string name="unknown">Неизвестно</string>
     <string name="username">Логин</string>
     <string name="password">Пароль</string>
-    <string name="choose">Выбрать</string>
+    <string name="select">Выбрать</string>
     <string name="signIn">Войти</string>
     <string name="setTempSuccess">Установлено %1$,.1f°C</string>
     <string name="setTempFailure">Сбой установки температуры</string>

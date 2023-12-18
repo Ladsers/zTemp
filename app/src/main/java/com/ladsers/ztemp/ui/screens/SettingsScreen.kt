@@ -3,9 +3,6 @@ package com.ladsers.ztemp.ui.screens
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CardDefaults
-import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
@@ -34,7 +28,6 @@ import androidx.wear.compose.material.TimeTextDefaults
 import androidx.wear.compose.material.TitleCard
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
-import androidx.wear.compose.material.dialog.Alert
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.ladsers.ztemp.BuildConfig
 import com.ladsers.ztemp.R
@@ -129,7 +122,7 @@ fun SettingsScreen(
                     disabledAction = {
                         coroutineScope.launch {
                             listState.animateScrollToItem(
-                                if (updateAvailable) 5 else 4,
+                                if (updateAvailable) 5 else 4, // lazy scrolling depending on update card visibility
                                 0
                             )
                         }
@@ -173,10 +166,12 @@ fun SettingsScreen(
                     content = if (viewModel.addFeatures.value) null
                     else stringResource(id = R.string.getAdditionalFeatures),
                     enabled = true,
-                    action = {
+                    onClickAction = {
                         if (viewModel.addFeatures.value) {
+                            // User has already supported the developer and entered the code
                             goToWebsite("https://pay.cloudtips.ru/p/9da1c376")
                         } else {
+                            // User has not yet supported the developer
                             startDonationActivity()
                         }
                     }
@@ -186,7 +181,7 @@ fun SettingsScreen(
                 ItemCard(
                     title = stringResource(id = R.string.appWebsite),
                     enabled = true,
-                    action = { goToWebsite("https://www.ladsers.com/ztemp") })
+                    onClickAction = { goToWebsite("https://www.ladsers.com/ztemp") })
             }
             item {
                 ItemCard(title = stringResource(id = R.string.createdBy))
@@ -194,7 +189,7 @@ fun SettingsScreen(
             item {
                 ItemCard(title = stringResource(id = R.string.licenseThirdParty),
                     enabled = true,
-                    action = { goToWebsite("https://www.ladsers.com/ztemp/license") })
+                    onClickAction = { goToWebsite("https://www.ladsers.com/ztemp/license") })
             }
             item {
                 ItemCard(
@@ -205,14 +200,14 @@ fun SettingsScreen(
             item {
                 ItemCard(title = stringResource(id = R.string.logOut),
                     enabled = true,
-                    action = { logOutDialogState.value = true })
+                    onClickAction = { logOutDialogState.value = true })
             }
         }
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
     }
-    
+
     LogOutDialog(dialogState = logOutDialogState) { viewModel.logOut() }
 }
 
@@ -238,6 +233,6 @@ fun ChangeDeviceCard(
         onClick = { if (enabled) action() else disabledAction() },
         enabled = true
     ) {
-        Text(deviceName, color = if (enabled) Teal else Color.Gray)
+        Text(text = deviceName, color = if (enabled) Teal else Color.Gray)
     }
 }

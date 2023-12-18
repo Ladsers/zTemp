@@ -91,9 +91,9 @@ fun DonationScreen(
             }
             item {
                 ItemCard(
-                    title = stringResource(id = R.string.openCloudTips),
+                    title = stringResource(id = R.string.goToDonation),
                     enabled = true,
-                    action = goToWebDonation
+                    onClickAction = goToWebDonation
                 )
             }
             item {

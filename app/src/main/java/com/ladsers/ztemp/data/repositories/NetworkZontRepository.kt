@@ -20,12 +20,13 @@ class NetworkZontRepository(
     override suspend fun getDevices(token: String): List<DeviceStatus> {
         val devicesRequest = DevicesRequest(loadIo = false)
 
+        // Selection of supported and online devices.
         val devices = zontService.getDevices(token, devicesRequest).devices.filter { d ->
             (d.id ?: 0) > 0 && !d.name.isNullOrEmpty() && d.online == true &&
                     (d.thermostatTargetTemps?.thermostatTargetTemps1?.manual == true
                             && (d.thermostatTargetTemps?.thermostatTargetTemps1?.temp ?: 0.0) > 0.0)
                     || (d.thermostatTargetTemps?.thermostatTargetTemps0?.manual == true
-                            && (d.thermostatTargetTemps?.thermostatTargetTemps0?.temp ?: 0.0) > 0.0)
+                    && (d.thermostatTargetTemps?.thermostatTargetTemps0?.temp ?: 0.0) > 0.0)
         }
 
         return devices.map { device ->
@@ -45,9 +46,10 @@ class NetworkZontRepository(
     override suspend fun getDeviceStatus(token: String, deviceId: Int): DeviceStatus {
         val device = zontService.getDevices(token).devices.firstOrNull { d -> d.id == deviceId }
 
-        var targetTemp: Double?
-        var targetThermostatId: Int?
+        val targetTemp: Double?
+        val targetThermostatId: Int?
 
+        // Getting the right thermostat.
         if (device?.thermostatTargetTemps?.thermostatTargetTemps1?.manual == true) {
             targetTemp = device.thermostatTargetTemps!!.thermostatTargetTemps1!!.temp
             targetThermostatId = 1

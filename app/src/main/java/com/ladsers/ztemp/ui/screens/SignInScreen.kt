@@ -92,6 +92,7 @@ fun SignInScreen(viewModel: ZontViewModel) {
             }
         }
         LaunchedEffect(Unit) {
+            // For correct functioning of the bezel
             focusRequester.requestFocus()
         }
     }

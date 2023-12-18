@@ -9,22 +9,25 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TitleCard
 import com.ladsers.ztemp.ui.theme.Teal
 
+/**
+ * Universal card for displaying information.
+ */
 @Composable
 fun ItemCard(
     title: String,
     content: String? = null,
     enabled: Boolean = false,
-    action: () -> Unit = {}
+    onClickAction: () -> Unit = {}
 ) {
     TitleCard(
-        title = { Text(title, fontSize = 18.sp, color = Color.White) },
+        title = { Text(text = title, fontSize = 18.sp, color = Color.White) },
         backgroundPainter = CardDefaults.cardBackgroundPainter(
             startBackgroundColor = MaterialTheme.colors.surface,
             endBackgroundColor = MaterialTheme.colors.surface
         ),
-        onClick = action,
+        onClick = onClickAction,
         enabled = enabled
     ) {
-        content?.let { Text(it, color = Teal) }
+        content?.let { Text(text = it, color = Teal) }
     }
 }

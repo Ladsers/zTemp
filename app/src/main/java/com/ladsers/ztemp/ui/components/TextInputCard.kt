@@ -24,6 +24,9 @@ import com.ladsers.ztemp.R
 import com.ladsers.ztemp.ui.theme.AlmostBlack
 import com.ladsers.ztemp.ui.theme.Teal
 
+/**
+ * Card for entering text data from the user. For example, username.
+ */
 @Composable
 fun TextInputCard(
     label: String,
@@ -46,7 +49,7 @@ fun TextInputCard(
         title = { Text(label, fontSize = 18.sp, color = if (enabled) Color.White else Color.Gray) },
         content = {
             Text(
-                valueState.value.ifEmpty { stringResource(id = R.string.enter) },
+                text = valueState.value.ifEmpty { stringResource(id = R.string.enter) },
                 color = if (enabled) Teal else Color.Gray
             )
         },
@@ -71,6 +74,7 @@ fun TextInputCard(
                 RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
                 launcher.launch(intent)
             } else {
+                // when disabled, the card changes color and performs a different action
                 disabledAction()
             }
         }

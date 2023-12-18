@@ -5,6 +5,9 @@ import com.ladsers.ztemp.data.models.TempSetter
 import com.ladsers.ztemp.domain.states.DeviceStatusState
 import com.ladsers.ztemp.domain.viewModels.ZontViewModel
 
+/**
+ * Translate state into UI screens.
+ */
 @Composable
 fun MainScreen(
     deviceStatusState: DeviceStatusState,

@@ -31,7 +31,7 @@ class SettingsActivity : ComponentActivity() {
             ResultActivityKey.INPUT_KEY.value,
             this,
             DonationContract()
-        ) { code -> code?.let { viewModel.checkCode(it) } }
+        ) { code -> code?.let { viewModel.checkCode(it) } } // action after RESULT_OK
 
         val updateAvailable = intent.getBooleanExtra("updateAvailable", false)
         val deviceName = intent.getStringExtra("deviceName") ?: ""
@@ -40,10 +40,10 @@ class SettingsActivity : ComponentActivity() {
         setContent {
             ZTempTheme {
                 viewModel = settingsActivityContent(
-                    updateAvailable,
-                    deviceName,
-                    tempStep,
-                    finishActivity = { finish() },
+                    updateAvailable = updateAvailable,
+                    deviceName = deviceName,
+                    tempStep = tempStep,
+                    finishActivity = ::finish,
                     goToWebsite = { url -> goToWebsite(url) },
                     startDonationActivity = ::startDonationActivity,
                     showConfirmationActivity = { confirmationType, message ->
@@ -79,7 +79,10 @@ class SettingsActivity : ComponentActivity() {
 
     private fun startDonationActivity() = donationLauncher.launch()
 
-    private fun showConfirmationActivity(confirmationType: ConfirmationType, @StringRes resId: Int) {
+    private fun showConfirmationActivity(
+        confirmationType: ConfirmationType,
+        @StringRes resId: Int
+    ) {
         startActivity(
             Intent(this, ConfirmationActivity::class.java)
                 .putExtra(

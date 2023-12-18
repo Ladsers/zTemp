@@ -29,12 +29,12 @@ fun settingsActivityContent(
     )
 
     SettingsScreen(
-        settingsViewModel,
-        updateAvailable,
-        deviceName,
-        finishActivity,
-        goToWebsite,
-        startDonationActivity
+        viewModel = settingsViewModel,
+        updateAvailable = updateAvailable,
+        deviceName = deviceName,
+        finishActivity = finishActivity,
+        goToWebsite = goToWebsite,
+        startDonationActivity = startDonationActivity
     )
 
     return settingsViewModel
