@@ -21,8 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okio.IOException
 import retrofit2.HttpException
+import java.io.IOException
 import kotlin.math.round
 
 class ZontViewModel(
