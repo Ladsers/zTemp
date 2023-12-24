@@ -208,7 +208,10 @@ fun SettingsScreen(
         }
     }
 
-    LogOutDialog(dialogState = logOutDialogState) { viewModel.logOut() }
+    LogOutDialog(dialogState = logOutDialogState) {
+        viewModel.logOut()
+        finishActivity()
+    }
 }
 
 @Composable

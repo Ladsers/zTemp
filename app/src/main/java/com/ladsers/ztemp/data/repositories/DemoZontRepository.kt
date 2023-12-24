@@ -10,7 +10,7 @@ import retrofit2.Response
 
 class DemoZontRepository : ZontRepository {
 
-    private var _targetTemp = 12.0
+    private var _targetTemp : Double? = null
 
     override suspend fun getUserInfo(login: String, password: String): UserInfo {
         delay(750) // Internet imitation
@@ -38,6 +38,8 @@ class DemoZontRepository : ZontRepository {
                 )
             )
         }
+
+        _targetTemp = null
 
         return listOf(
             DeviceStatus(
@@ -90,16 +92,29 @@ class DemoZontRepository : ZontRepository {
             else -> ""
         }
 
-        return DeviceStatus(
-            id = deviceId,
-            name = name,
-            tempStep = 0.5,
-            currentTemp = 10.6,
-            targetTemp = _targetTemp,
-            targetThermostatId = 1,
-            mainPower = _targetTemp != 14.0,
-            online = true
-        )
+        return if (deviceId == 1122) {
+            DeviceStatus(
+                id = deviceId,
+                name = name,
+                tempStep = 0.5,
+                currentTemp = 10.8,
+                targetTemp = _targetTemp ?: 11.0,
+                targetThermostatId = 1,
+                mainPower = _targetTemp != 14.0,
+                online = true
+            )
+        } else {
+            DeviceStatus(
+                id = deviceId,
+                name = name,
+                tempStep = 0.5,
+                currentTemp = 24.8,
+                targetTemp = _targetTemp ?: 25.0,
+                targetThermostatId = 1,
+                mainPower = _targetTemp != 14.0,
+                online = true
+            )
+        }
     }
 
     override suspend fun setTemp(
