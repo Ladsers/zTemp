@@ -1,7 +1,7 @@
-![logo]()
+<img src="https://raw.githubusercontent.com/Ladsers/zTemp/main/.github/readme/ztemp_logo.svg" width="75" height="75">
 
 ## zTemp
-####Application for smartwatches based on Wear OS to control heating boilers connected to ZONT devices.
+#### Application for smartwatches based on Wear OS to control heating boilers connected to ZONT devices.
 *An unofficial application that uses a publicly provided API to interact with ZONT devices.*
 
 ```
@@ -21,7 +21,8 @@ git clone --recursive https://github.com/Ladsers/zTemp.git
 
 
 ### Screenshots
-![screenshot]()
+</br>
+<img src="https://raw.githubusercontent.com/Ladsers/zTemp/main/.github/readme/ztemp_screen_github.jpg" width="600">
 
 ### Contributing
 Here are some ways you can contribute:
