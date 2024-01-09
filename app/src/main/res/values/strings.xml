@@ -60,5 +60,6 @@
     <string name="setTempFailure">Сбой установки температуры</string>
     <string name="code">Код</string>
     <string name="areYouSure">Вы уверены?</string>
+    <string name="noDevices">Нет доступных устройств</string>
 
 </resources>

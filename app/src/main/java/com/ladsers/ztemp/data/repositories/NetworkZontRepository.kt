@@ -18,15 +18,10 @@ class NetworkZontRepository(
     )
 
     override suspend fun getDevices(token: String): List<DeviceStatus> {
-        val devicesRequest = DevicesRequest(loadIo = false)
-
         // Selection of supported and online devices.
-        val devices = zontService.getDevices(token, devicesRequest).devices.filter { d ->
+        val devices = zontService.getDevices(token).devices.filter { d ->
             (d.id ?: 0) > 0 && !d.name.isNullOrEmpty() && d.online == true &&
-                    (d.thermostatTargetTemps?.thermostatTargetTemps1?.manual == true
-                            && (d.thermostatTargetTemps?.thermostatTargetTemps1?.temp ?: 0.0) > 0.0)
-                    || (d.thermostatTargetTemps?.thermostatTargetTemps0?.manual == true
-                    && (d.thermostatTargetTemps?.thermostatTargetTemps0?.temp ?: 0.0) > 0.0)
+                    (d.io?.lastBoilerState?.targetTemp ?: 0.0) > 0.0
         }
 
         return devices.map { device ->
@@ -57,8 +52,9 @@ class NetworkZontRepository(
             targetTemp = device.thermostatTargetTemps!!.thermostatTargetTemps0!!.temp
             targetThermostatId = 0
         } else {
-            targetTemp = null
-            targetThermostatId = null
+            // it looks like the temperature is set via the temp zone, try taking thermostatTargetTemps1
+            targetTemp = device?.thermostatTargetTemps?.thermostatTargetTemps1?.temp
+            targetThermostatId = if (targetTemp != null) 1 else null
         }
 
         return DeviceStatus(
@@ -83,10 +79,12 @@ class NetworkZontRepository(
             id = deviceId,
             thermostatTargetTemps = if (targetThermostatId == 1) ThermostatTargetTemps(
                 thermostatTargetTemps1 = ThermostatTargetTemps1(
+                    manual = true, // this flag must be set to true
                     temp = targetTemp
                 )
             ) else ThermostatTargetTemps(
                 thermostatTargetTemps0 = ThermostatTargetTemps0(
+                    manual = true,
                     temp = targetTemp
                 )
             )

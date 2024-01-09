@@ -81,11 +81,17 @@ fun DevicesScreen(
                     )
                 }
             }
-            items(devices) { device ->
-                ItemCard(
-                    title = device.name,
-                    enabled = true,
-                    onClickAction = { onDeviceSelected(device.id) })
+            if (devices.isNotEmpty()) {
+                items(devices) { device ->
+                    ItemCard(
+                        title = device.name,
+                        enabled = true,
+                        onClickAction = { onDeviceSelected(device.id) })
+                }
+            } else {
+                item {
+                    ItemCard(title = stringResource(id = R.string.noDevices))
+                }
             }
             item {
                 Button(

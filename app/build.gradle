@@ -13,8 +13,8 @@ android {
         applicationId "com.ladsers.ztemp"
         minSdk 30
         targetSdk 33
-        versionCode 1
-        versionName "23.12.0"
+        versionCode 2
+        versionName "24.1.0"
         vectorDrawables {
             useSupportLibrary true
         }
